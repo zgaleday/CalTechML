@@ -41,7 +41,6 @@ def generate_set(number, m, b):
             bools[count] = True
         else:
             bools[count] = False
-        count += 1
 
     return vectors, bools
 
@@ -58,7 +57,6 @@ def plot_points(points, bools, m, b):
             plt.plot(point[0], point[1], 'bo')
         else:
             plt.plot(point[0], point[1], 'ro')
-        count += 1
     plt.ylim([-1, 1])
     plt.xlim([-1, 1])
     plt.show()
