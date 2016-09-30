@@ -20,7 +20,8 @@ Function to classify points as either correct under current model or incorrect.
 Takes an input vector as an array as input, with w from the current hypothesis, and a boolean array and index into the array.
 Returns a boolean.  False if misclassified under give m and b. True is properly classified.
 """
-
+def classify_points():
+    TODO
 
 """
 Generates the data set to be used with the PLA.
@@ -32,7 +33,6 @@ def generate_set(number, m, b):
     bools = np.ones(number, dtype=bool)
     count = 0
     for vector in vectors:
-        print count
         x = vector[0]
         target_y = x * m + b
         if (target_y > vector[1]):
@@ -49,8 +49,8 @@ also shows the target function.  This is used as a visible conformation of the b
 Takes vectors from generate set and m, b for the target function as params.
 Return 1.
 """
-def plot_points(vectors, m, b):
-    
+def plot_points():
+    TODO
 
 
 
@@ -58,6 +58,6 @@ def plot_points(vectors, m, b):
 
 m, b = target_function()
 vectors, bools = generate_set(10, m, b)
-print vectors
-print bools
-print m, b
+print(vectors)
+print(bools)
+print(m, b)
