@@ -11,17 +11,20 @@ def target_function():
 
     point_a = (random.uniform(-1, 1), random.uniform(-1, 1))
     point_b = (random.uniform(-1, 1), random.uniform(-1, 1))
-    m = (point_a[1] - point_b[1]) / point_a[0] - point_b[0]
+    print(point_a)
+    print(point_b)
+    m = (point_a[1] - point_b[1]) / (point_a[0] - point_b[0])
     b = point_a[1] - m*point_a[0]
     return m, b
 
 """
 Function to classify points as either correct under current model or incorrect.
-Takes an input vector as an array as input, with w from the current hypothesis, and a boolean array and index into the array.
-Returns a boolean.  False if misclassified under give m and b. True is properly classified.
+Takes an input vector as an array as input, with m and b from the current hypothesis.
+Returns a boolean.  False if below threshold under give m and b. True if above threshold.
 """
-def classify_points():
-    TODO
+def classify_points(point, m, b):
+    # TODO: Method to classify point as fitting with or against current hypothesis.
+    pass
 
 """
 Generates the data set to be used with the PLA.
@@ -49,11 +52,16 @@ also shows the target function.  This is used as a visible conformation of the b
 Takes vectors from generate set and m, b for the target function as params.
 Return 1.
 """
-def plot_points():
-    TODO
-
-
-
+def plot_points(points, bools, m, b):
+    count = 0
+    plt.plot([((-1-b)/m), ((1-b)/m)], [-1, 1])
+    for point in points:
+        if (bools[count]):
+            plt.plot(point[0], point[1], 'bo')
+        else:
+            plt.plot(point[0], point[1], 'ro')
+        count += 1
+    plt.show()
 
 
 m, b = target_function()
@@ -61,3 +69,4 @@ vectors, bools = generate_set(10, m, b)
 print(vectors)
 print(bools)
 print(m, b)
+plot_points(vectors, bools, m, b)
