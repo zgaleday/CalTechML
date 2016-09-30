@@ -34,8 +34,7 @@ Returns the points as an array of vectors and a boolean array to classify the po
 def generate_set(number, m, b):
     vectors = np.random.uniform(-1, 1, (number, 2))
     bools = np.ones(number, dtype=bool)
-    count = 0
-    for vector in vectors:
+    for count, vector in enumerate(vectors):
         x = vector[0]
         target_y = x * m + b
         if (target_y > vector[1]):
@@ -53,9 +52,8 @@ Takes vectors from generate set and m, b for the target function as params.
 Return 1.
 """
 def plot_points(points, bools, m, b):
-    count = 0
     plt.plot([((-1-b)/m), ((1-b)/m)], [-1, 1])
-    for point in points:
+    for count, point in enumerate(points):
         if (bools[count]):
             plt.plot(point[0], point[1], 'bo')
         else:
