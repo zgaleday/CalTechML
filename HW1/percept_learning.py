@@ -15,6 +15,8 @@ def target_function():
     b = point_a[1] - m*point_a[0]
     return m, b
 
+
+
 """
 !!!!Function replaced by vector classify!!!!!
 Function to classify points as either correct under current model or incorrect.
@@ -27,6 +29,8 @@ def classify_point(point, m, b):
         return True
     else:
         return False
+
+
 
 """
 Function to classify points as either correct under current model or incorrect.
@@ -41,6 +45,8 @@ def vector_classify(point, w):
     else:
         return False
 
+
+
 """
 Generates the data set to be used with the PLA.
 Takes in the number of points to generate as an argument as well as m, b of target function.
@@ -53,6 +59,8 @@ def generate_set(number, m, b):
         bools[count] = vector_classify(vector, np.array([m, - 1, b]))
     return vectors, bools
 
+
+
 """
 Takes the points generated in the generate set function and draws a scatter containing those plots.  The scatter
 also shows the target function.  This is used as a visible conformation of the boolean assignation in generate_set()
@@ -60,15 +68,17 @@ Takes vectors from generate set and m, b for the target function as params.
 Return 1.
 """
 def plot_points(points, bools, m, b):
-    plt.plot([((-1-b)/m), ((1-b)/m)], [-1, 1])
+    plt.plot([((-1-b)/m), ((1-b)/m)], [-1, 1], 'r')
     for count, point in enumerate(points):
-        if (bools[count]):
+        if bools[count]:
             plt.plot(point[0], point[1], 'bo')
         else:
             plt.plot(point[0], point[1], 'ro')
     plt.ylim([-1, 1])
     plt.xlim([-1, 1])
     plt.show()
+
+
 
 """
 Takes two vectors as input.  The w vector or hypothesis vector and the misclassified point vector.
@@ -77,14 +87,41 @@ This updated w vector is the return value.  This w results in the input vector n
 and target function.
 """
 def update(w, x):
-    return np.add(w, [1.0, x[0], x[1]])
+    temp = np.add(w, [x[0], x[1], 1.0])
+    temp[2] = 1.0
+    return temp
 
 
+
+"""A method to run the PLA on the generated data set.  Hypothesis starts as the 3D Z vector.  All points misclassified
+under this hypoth.  Picks a random misclassified point wrt training value and updates the hypothesis with update().
+Runs until all points correctly classified under hypothesis.  Returns the hypothesis vector.
+Params: Points of data set (array of 2D arrays), boolean array of value of each point wrt target function.
+Return: 3D g vector of final hypothesis.
+"""
+def pla(points, bools):
+    w = np.array([0.0, 0.0, 0.0])
+    while(True):
+        check = False
+        for count, point in enumerate(points):
+            classification = vector_classify(point, w)
+            if bools[count] != classification:
+                w = update(w, point)
+                check = True
+        for count, point in enumerate(points):
+            print(bools[count] == vector_classify(point, w))
+        if check != True:
+            break
+    return w
 
 m, b = target_function()
 vectors, bools = generate_set(10, m, b)
 # print(vectors)
 # print(bools)
 # print(m, b)
+g = pla(vectors, bools)
+mg = (1/-g[1])*g[0]
+bg = (1/-g[1])*g[2]
+plt.plot([((-1-bg)/mg), ((1-bg)/mg)], [-1, 1], 'b')
 plot_points(vectors, bools, m, b)
 # print(update([1.0, 2.0, 3.0], vectors[0]))
