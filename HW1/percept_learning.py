@@ -88,12 +88,12 @@ and target function.
 """
 def update(w, x, bools, index):
     vect = np.array([x[0], x[1], 1.0])
-    dot = np.dot(vect, w)
+    # dot = np.dot(vect, w)
     if bools[index]:
         d = 1
     else:
-        d = 0
-    vect = np.multiply(d - dot, vect)
+        d = -1
+    vect = np.multiply(d, vect)
     temp = np.add(w, vect)
     return temp
 
@@ -142,15 +142,17 @@ Return:  The average number of time steps needed for PLA to converge to valid hy
 """
 def convergence_time(number):
     average = 0.0
-    for i in range(1,1001):
+    for i in range(1,1000):
         m, b = target_function()
         vectors, bools = generate_set(number, m, b)
         w = np.array([0.0, 0.0, 0.0])
         temp = pla(vectors, bools, w)
+        average = (average * i + temp) / (i + 1)
+    return average
 
 
-
-convergence_time(10)
+print(convergence_time(10))
+print(convergence_time(100))
 # m, b = target_function()
 # vectors, bools = generate_set(100, m, b)
 # g = pla(vectors, bools)
