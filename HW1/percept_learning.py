@@ -11,8 +11,6 @@ def target_function():
 
     point_a = (random.uniform(-1, 1), random.uniform(-1, 1))
     point_b = (random.uniform(-1, 1), random.uniform(-1, 1))
-    print(point_a)
-    print(point_b)
     m = (point_a[1] - point_b[1]) / (point_a[0] - point_b[0])
     b = point_a[1] - m*point_a[0]
     return m, b
@@ -58,10 +56,20 @@ def plot_points(points, bools, m, b):
     plt.xlim([-1, 1])
     plt.show()
 
+"""
+Takes two vectors as input.  The w vector or hypothesis vector and the misclassified point vector.
+Updated the w vector by taking the vector sum of w + x to give an updated w vector.
+This updated w vector is the return value.  This w results in the input vector now being correctly classified wrt hypothesis
+and target function.
+"""
+def update(w, x):
+    return np.add(w, [1.0, x[0], x[1]])
+
 
 m, b = target_function()
 vectors, bools = generate_set(10, m, b)
-print(vectors)
-print(bools)
-print(m, b)
-plot_points(vectors, bools, m, b)
+# print(vectors)
+# print(bools)
+# print(m, b)
+# plot_points(vectors, bools, m, b)
+print(update([1.0, 2.0, 3.0], vectors[0]))
