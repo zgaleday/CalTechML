@@ -86,14 +86,21 @@ Updated the w vector by taking the vector sum of w + x to give an updated w vect
 This updated w vector is the return value.  This w results in the input vector now being correctly classified wrt hypothesis
 and target function.
 """
-def update(w, x):
-    temp = np.add(w, [x[0], x[1], 1.0])
-    temp[2] = 1.0
+def update(w, x, bools, index):
+    vect = np.array([x[0], x[1], 1.0])
+    dot = np.dot(vect, w)
+    if bools[index]:
+        d = 1
+    else:
+        d = 0
+    vect = np.multiply(d - dot, vect)
+    temp = np.add(w, vect)
     return temp
 
 
 
-"""A method to run the PLA on the generated data set.  Hypothesis starts as the 3D Z vector.  All points misclassified
+"""
+A method to run the PLA on the generated data set.  Hypothesis starts as the 3D Z vector.  All points misclassified
 under this hypoth.  Picks a random misclassified point wrt training value and updates the hypothesis with update().
 Runs until all points correctly classified under hypothesis.  Returns the hypothesis vector.
 Params: Points of data set (array of 2D arrays), boolean array of value of each point wrt target function.
@@ -106,10 +113,10 @@ def pla(points, bools):
         for count, point in enumerate(points):
             classification = vector_classify(point, w)
             if bools[count] != classification:
-                w = update(w, point)
+                w = update(w, point, bools, count)
                 check = True
-        for count, point in enumerate(points):
-            print(bools[count] == vector_classify(point, w))
+        # for count, point in enumerate(points):
+        #     print(bools[count] == vector_classify(point, w))
         if check != True:
             break
     return w
