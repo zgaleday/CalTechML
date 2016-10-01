@@ -22,9 +22,12 @@ Function to classify points as either correct under current model or incorrect.
 Takes an input vector as an array as input, with m and b from the current hypothesis.
 Returns a boolean.  False if below threshold under give m and b. True if above threshold.
 """
-def classify_points(point, m, b):
-    # TODO: Method to classify point as fitting with or against current hypothesis.
-    pass
+def classify_point(point, m, b, bools, index):
+    target_y = point[0] * m + b
+    if (target_y > point[1]):
+        bools[index] = True
+    else:
+        bools[index] = False
 
 """
 Generates the data set to be used with the PLA.
@@ -35,13 +38,7 @@ def generate_set(number, m, b):
     vectors = np.random.uniform(-1, 1, (number, 2))
     bools = np.ones(number, dtype=bool)
     for count, vector in enumerate(vectors):
-        x = vector[0]
-        target_y = x * m + b
-        if (target_y > vector[1]):
-            bools[count] = True
-        else:
-            bools[count] = False
-
+        classify_point(vector, m, b, bools, count)
     return vectors, bools
 
 """
