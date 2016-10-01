@@ -118,8 +118,6 @@ def pla(points, bools, w, toggle=True):
                 w = update(w, point, bools, count)
                 check = True
                 t_converge += 1
-        # for count, point in enumerate(points):
-        #     print(bools[count] == vector_classify(point, w))
         if check != True:
             break
     if toggle:
@@ -152,6 +150,16 @@ def convergence_time(number):
         temp = pla(vectors, bools, w)
         average = (average * i + temp) / (i + 1)
     return average
+
+"""
+Takes a given hypothesis and target function and calculated the error defined as the probability that any point in the
+defined plane will be misclassified under the given hypothesis.
+Params:  target function vector, g vector.
+Return: Probability of miscalculation.
+"""
+def error(f, g):
+    # TODO
+    pass
 
 
 # convergence_time(10)
