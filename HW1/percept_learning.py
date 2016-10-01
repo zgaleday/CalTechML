@@ -16,13 +16,27 @@ def target_function():
     return m, b
 
 """
+!!!!Function replaced by vector classify!!!!!
 Function to classify points as either correct under current model or incorrect.
-Takes an input vector as an array as input, with m and b from the current hypothesis.
+Takes an input point as an array as input, with m and b from the current hypothesis.
 Returns a boolean.  False if below threshold under give m and b. True if above threshold.
 """
 def classify_point(point, m, b):
     target_y = point[0] * m + b
     if (target_y > point[1]):
+        return True
+    else:
+        return False
+
+"""
+Function to classify points as either correct under current model or incorrect.
+Takes an input point 2D as an array as input, with w vector (in 3D) from the current hypothesis.
+Returns a boolean based on dot product of w and point (with 1 added to make array 3D).
+False if below or at threshold under give hypothesis. True if above threshold.
+"""
+def vector_classify(point, w):
+    dot = np.dot(np.array([point[0], point[1], 1.0]), w)
+    if (dot > 0):
         return True
     else:
         return False
@@ -36,7 +50,7 @@ def generate_set(number, m, b):
     vectors = np.random.uniform(-1, 1, (number, 2))
     bools = np.ones(number, dtype=bool)
     for count, vector in enumerate(vectors):
-        bools[count] = classify_point(vector, m, b)
+        bools[count] = vector_classify(vector, np.array([m, - 1, b]))
     return vectors, bools
 
 """
@@ -66,10 +80,11 @@ def update(w, x):
     return np.add(w, [1.0, x[0], x[1]])
 
 
+
 m, b = target_function()
 vectors, bools = generate_set(10, m, b)
 # print(vectors)
 # print(bools)
 # print(m, b)
-# plot_points(vectors, bools, m, b)
-print(update([1.0, 2.0, 3.0], vectors[0]))
+plot_points(vectors, bools, m, b)
+# print(update([1.0, 2.0, 3.0], vectors[0]))
