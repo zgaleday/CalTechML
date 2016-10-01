@@ -2,7 +2,6 @@ __author__ = 'zachary'
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.integrate as integrate
 
 """
 Function generates a random line by choosing two points uniformly ([-1,1], [-1,1]) at random in 2D plane.
@@ -15,21 +14,6 @@ def target_function():
     m = (point_a[1] - point_b[1]) / (point_a[0] - point_b[0])
     b = point_a[1] - m*point_a[0]
     return m, b
-
-
-
-"""
-!!!!Function replaced by vector classify!!!!!
-Function to classify points as either correct under current model or incorrect.
-Takes an input point as x, y coords, with m and b from the current hypothesis.
-Returns a boolean.  False if below threshold under give m and b. True if above threshold.
-"""
-def classify_point(x, y, m, b):
-    target_y = x * m + b
-    if (target_y > y):
-        return True
-    else:
-        return False
 
 
 
