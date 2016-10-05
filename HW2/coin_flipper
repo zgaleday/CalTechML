@@ -5,6 +5,8 @@ Method to generate a sample of a given size for a fair coin.
 Param: Number of coins to flip
 Return: An array of length number with outcome of fair flips. 0 is tails 1 is heads
 """
+
+
 def sample_gen(number):
     sample = np.random.randint(0, 2, number)
     return sample
@@ -14,6 +16,8 @@ by each coin
 Params: number of coins to flip.
 Return: Array with number of heads.
 """
+
+
 def ten_flips(number):
     result = np.array(np.zeros(number))
     for trial in range(10):
@@ -24,4 +28,22 @@ def ten_flips(number):
                 result[count] += 1
 
     return result
+
+
+"""
+Returns the minimum number of heads for a give trail of 10 flips
+Params: An array of ints
+Return: The minimum value in that array ($C_min$)
+"""
+def min_heads(result):
+    return np.amin(result)
+
+
+"""
+Returns the number of heads of a random coin in the sample
+Params: An array of ints
+Return: The number of heads of a random coin in the sample.
+"""
+def rand_heads(result):
+    return result[np.random.randint(0, len(result))]
 
