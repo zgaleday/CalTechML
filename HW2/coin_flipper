@@ -7,5 +7,21 @@ Return: An array of length number with outcome of fair flips. 0 is tails 1 is he
 """
 def sample_gen(number):
     sample = np.random.randint(0, 2, number)
-    print(sample)
+    return sample
+
+"""Metod generated 10 samples for a given number of coins.  Outputs and array of the number of heads achieved
+by each coin
+Params: number of coins to flip.
+Return: Array with number of heads.
+"""
+def ten_flips(number):
+    result = np.array(np.zeros(number))
+    for trial in range(10):
+        coins = sample_gen(number)
+        print(trial)
+        for count, coin in enumerate(coins):
+            if coin == 1:
+                result[count] += 1
+
+    return result
 
