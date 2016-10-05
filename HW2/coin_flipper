@@ -1,15 +1,5 @@
 import numpy as np
 
-"""
-Method to generate a sample of a given size for a fair coin.
-Param: Number of coins to flip
-Return: An array of length number with outcome of fair flips. 0 is tails 1 is heads
-"""
-
-
-def sample_gen(number):
-    sample = np.random.randint(0, 2, number)
-    return sample
 
 """Metod generated 10 samples for a given number of coins.  Outputs and array of the number of heads achieved
 by each coin
