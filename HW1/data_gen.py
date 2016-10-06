@@ -1,4 +1,3 @@
-import random
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -34,8 +33,8 @@ class DataSet:
     """
 
     def target_function(self):
-        point_a = (random.uniform(-1, 1), random.uniform(-1, 1))
-        point_b = (random.uniform(-1, 1), random.uniform(-1, 1))
+        point_a = (np.random.uniform(-1, 1), np.random.uniform(-1, 1))
+        point_b = (np.random.uniform(-1, 1), np.random.uniform(-1, 1))
         self.m = (point_a[1] - point_b[1]) / (point_a[0] - point_b[0])
         self.b = point_a[1] - self.m * point_a[0]
         self.target = np.array([self.m, -1, self.b])
