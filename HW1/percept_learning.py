@@ -2,7 +2,7 @@ __author__ = 'zachary'
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from DataSet import DataSet
+from data_gen import DataSet
 
 """
 Takes two vectors as input.  The w vector or hypothesis vector and the misclassified point vector.
@@ -35,16 +35,14 @@ If toggle False: final hypothesis.
 def pla(number, w, toggle="time"):
     t_converge = 0
     data_set = DataSet(number)
-    while (True):
+    check = True
+    while (check):
         check = False
-        for count, point in enumerate(points):
-            classification = vector_classify(point, w)
-            if bools[count] != classification:
-                w = update(w, point, bools, count)
+        for index in range(data_set.size):
+            if data_set.check(index, w):
+                w = update(w, data_set, index)
                 check = True
                 t_converge += 1
-        if check != True:
-            break
     if toggle == "time":
         return t_converge
     elif toggle == "vector":
