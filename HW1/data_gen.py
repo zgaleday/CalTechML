@@ -76,6 +76,18 @@ class DataSet:
         else:
             return False
 
+    """
+    Compared the classification of given point with against the target function and a given vector
+    Params: Point, vector
+    Return: True if target and vector class ==, false otherwise
+    """
+    def compare(self, point, g):
+        dot = np.dot(point, self.target)
+        dot_g = np.dot(point, g)
+        if np.sign(dot) == np.sign(dot_g):
+            return True
+        else:
+            return False
 
     """
     Takes the points generated in the generate set function and draws a scatter containing those plots.  The scatter
@@ -96,5 +108,3 @@ class DataSet:
         plt.show()
 
 
-dist = DataSet(100)
-dist.plot_points()
