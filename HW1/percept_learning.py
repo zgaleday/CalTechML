@@ -68,7 +68,7 @@ Return:  The average number of time steps needed for PLA to converge to valid hy
 """
 
 
-def convergence_time(number):
+def convergence_stats(number):
     t_average = 0.0
     e_average = 0.0
     data_set = DataSet(number)
