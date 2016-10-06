@@ -180,11 +180,11 @@ def error(f, g):
     return error / 10000
 
 
-print(convergence_time(10))
-# m, b = target_function()
-# vectors, bools = generate_set(100, m, b)
-# w = [0.0, 0.0, 0.0]
-# g = pla(vectors, bools, w, "vector")
-# print(error(np.array([m, - 1, b]), g))
-# graph_g(g)
-# plot_points(vectors, bools, m, b)
+# print(convergence_time(10))
+m, b = target_function()
+vectors, bools = generate_set(100, m, b)
+w = [0.0, 0.0, 0.0]
+g = pla(vectors, bools, w, "vector")
+print(error(np.array([m, - 1, b]), g))
+graph_g(g)
+plot_points(vectors, bools, m, b)
