@@ -78,7 +78,6 @@ and target function.
 
 def update(w, x, bools, index):
     vect = np.array([x[0], x[1], 1.0])
-    # dot = np.dot(vect, w)
     if bools[index]:
         d = 1
     else:
