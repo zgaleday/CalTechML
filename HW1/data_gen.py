@@ -46,15 +46,24 @@ class DataSet:
     classify as -1.
     """
 
-    def classify(self, point, index, vector=None):
-        if vector == None:
-            dot = np.dot(point, self.target)
-        else:
-            dot = np.dot(point, vector)
+    def classify(self, point, index):
+        dot = np.dot(point, self.target)
         if dot > 0:
             self.bools[index] = True
         else:
             self.bools[index] = False
+
+
+    """Check if classification matches for target and given input vector
+    Param: vector and index of point
+    Return: True if classification matches false otherwise
+    """
+    def check(self, index, h):
+        dot = np.dot(self.points[index], h)
+        if (dot > 0 and self.bools[index]) or (dot <= 0 and self.bools[index] == False):
+            return True
+        else:
+            return False
 
 
     """
