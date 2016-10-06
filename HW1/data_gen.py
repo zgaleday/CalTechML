@@ -96,7 +96,7 @@ class DataSet:
     Return 1.
     """
 
-    def plot_points(self):
+    def plot_points(self, plot=False):
         plt.plot([((-1 - self.b) / self.m), ((1 - self.b) / self.m)], [-1, 1], 'r')
         for count, point in enumerate(self.points):
             if self.bools[count]:
@@ -105,6 +105,28 @@ class DataSet:
                 plt.plot(point[0], point[1], 'ro')
         plt.ylim([-1, 1])
         plt.xlim([-1, 1])
+        if plot:
+            plt.show()
+
+    """
+    Takes the points in the data set the target function and a given vector and plots them all
+    Param: vector
+    Return: None
+    """
+    def visualize_hypoth(self, g):
+        self.plot_points()
+        slope, inter = self.vector_to_standard(g)
+        plt.plot([((-1 - inter) / slope), ((1 - inter) / slope)], [-1, 1], 'b')
         plt.show()
 
+    """
+    Function to take hypothesis vector and return slope and intercept
+    Params: Hypothesis vector
+    Return: m, b of hypothesis vector
+    """
+
+    def vector_to_standard(self, w):
+        m = (- 1 / w[1]) * w[0]
+        b = (- 1 / w[1]) * w[2]
+        return m, b
 
