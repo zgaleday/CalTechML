@@ -45,8 +45,11 @@ class DataSet:
     classify as -1.
     """
 
-    def classify(self, point, index):
-        dot = np.dot(np.array([point[0], point[1], 1.0]), self.target)
+    def classify(self, point, index, vector=None):
+        if vector == None:
+            dot = np.dot(np.array([point[0], point[1], 1.0]), self.target)
+        else:
+            dot = np.dot(np.array([point[0], point[1], 1.0]), vector)
         if dot > 0:
             self.bools[index] = True
         else:
