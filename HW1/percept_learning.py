@@ -1,9 +1,6 @@
 __author__ = 'zachary'
-import random
 import numpy as np
-import matplotlib.pyplot as plt
 from data_gen import DataSet
-import time
 
 """
 Takes two vectors as input.  The w vector or hypothesis vector and the misclassified point vector.
