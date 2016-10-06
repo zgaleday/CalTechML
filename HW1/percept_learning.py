@@ -77,13 +77,11 @@ and target function.
 
 
 def update(w, x, bools, index):
-    vect = np.array([x[0], x[1], 1.0])
     if bools[index]:
         d = 1
     else:
         d = -1
-    vect = np.multiply(d, vect)
-    temp = np.add(w, vect)
+    temp = np.add(w, np.multiply(d, x))
     return temp
 
 

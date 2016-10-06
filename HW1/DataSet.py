@@ -10,7 +10,7 @@ class DataSet:
     def __init__(self, size):
         self.size = size
         self.bools = np.ones(self.size, dtype=bool)
-        self.points = np.random.uniform(-1, 1, (self.size, 2))
+        self.points = np.random.uniform(-1, 1, (self.size, 3))
         self.target = [0, 0, 0]
         self.m = 0
         self.b = 0
@@ -37,6 +37,7 @@ class DataSet:
 
     def generate_set(self):
         for count, point in enumerate(self.points):
+            point[2] = 1.0
             self.classify(point, count)
 
 
@@ -47,9 +48,9 @@ class DataSet:
 
     def classify(self, point, index, vector=None):
         if vector == None:
-            dot = np.dot(np.array([point[0], point[1], 1.0]), self.target)
+            dot = np.dot(point, self.target)
         else:
-            dot = np.dot(np.array([point[0], point[1], 1.0]), vector)
+            dot = np.dot(point, vector)
         if dot > 0:
             self.bools[index] = True
         else:
