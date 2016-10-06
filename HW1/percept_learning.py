@@ -17,7 +17,7 @@ def update(h, data_set, index):
         d = 1
     else:
         d = -1
-    temp = np.add(w, np.multiply(d, data_set.points[index]))
+    temp = np.add(h, np.multiply(d, data_set.points[index]))
     return temp
 
 
@@ -25,21 +25,19 @@ def update(h, data_set, index):
 A method to run the PLA on the generated data set.  Hypothesis starts as the 3D Z vector.  All points misclassified
 under this hypoth.  Picks a random misclassified point wrt training value and updates the hypothesis with update().
 Runs until all points correctly classified under hypothesis.  Returns the hypothesis vector.
-Params: Points of data set (array of 2D arrays), boolean array of value of each point wrt target function,
-and vector for first hypothesis. Toggle automatically set to True.
+Params: Initial hypothesis vector, DataSet class, toggle for output type.
 Return: If toggle True: Number of time steps to converge
 If toggle False: final hypothesis.
 """
 
 
-def pla(number, w, toggle="time"):
+def pla(w, data_set, toggle="time"):
     t_converge = 0
-    data_set = DataSet(number)
     check = True
-    while (check):
+    while check:
         check = False
         for index in range(data_set.size):
-            if data_set.check(index, w):
+            if not data_set.check(index, w):
                 w = update(w, data_set, index)
                 check = True
                 t_converge += 1
@@ -73,13 +71,13 @@ Return:  The average number of time steps needed for PLA to converge to valid hy
 def convergence_time(number):
     t_average = 0.0
     e_average = 0.0
+    data_set = DataSet(number)
     for i in range(1, 1000):
-        m, b = target_function()
-        vectors, bools = generate_set(number, m, b)
+        data_set.new_set()
         w = np.array([0.0, 0.0, 0.0])
-        temp, w = pla(vectors, bools, w, "both")
+        temp, w = pla(w, data_set, "both")
         t_average = (t_average * i + temp) / (i + 1)
-        e_average = (e_average * i + error(np.array([m, - 1, b]), w)) / (i + 1)
+        e_average = (e_average * i + error(data_set, w)) / (i + 1)
     return t_average, e_average
 
 
@@ -104,20 +102,15 @@ Return: Probability of miscalculation.
 """
 
 
-def error(f, g):
+def error(data_set, g):
     error = 0.0
-    points = np.random.uniform(-1, 1, (10000, 2))
+    points = np.random.uniform(-1, 1, (10000, 3))
     for point in points:
-        if vector_classify(point, f) != vector_classify(point, g):
+        point[2] = 1
+        if not data_set.compare(point, g):
             error += 1
     return error / 10000
 
 
-# print(convergence_time(10))
-m, b = target_function()
-vectors, bools = generate_set(100, m, b)
-w = [0.0, 0.0, 0.0]
-g = pla(vectors, bools, w, "vector")
-print(error(np.array([m, - 1, b]), g))
-graph_g(g)
-plot_points(vectors, bools, m, b)
+print(convergence_time(10))
+
