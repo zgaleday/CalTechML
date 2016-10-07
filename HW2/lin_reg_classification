@@ -1,3 +1,8 @@
 from HW1.data_gen import DataSet
 
-DataSet(100).plot_points(True)
+
+"""
+A method to computed the least squares linear regression for classification.
+Params: DataSet object
+Return: g calculated using linear regression.
+"""
