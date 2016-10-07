@@ -1,0 +1,3 @@
+from HW1.data_gen import DataSet
+
+DataSet(100).plot_points(True)
