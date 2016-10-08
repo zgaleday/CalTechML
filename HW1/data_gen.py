@@ -6,7 +6,7 @@ class DataSet:
     """Class to generate and manipulate a uniform distribution in 2D with a defined target function
     (randomly generated)"""
 
-    def __init__(self, size):
+    def __init__(self, size, linear=True, threshold=0, noise=0):
         self.size = size
         self.bools = np.ones(self.size, dtype=bool)
         self.points = np.random.uniform(-1, 1, (self.size, 3))
@@ -15,6 +15,8 @@ class DataSet:
         self.b = 0
         self.target_function()
         self.generate_set()
+        self.threshold = threshold
+        self.noise = noise
 
 
     """Generates a new set of points and target function for the DataSet class"""
@@ -41,8 +43,8 @@ class DataSet:
 
     """
     Generates the data set.
-    Takes in the number of points to generate as an argument as well as m, b of target function.
-    Returns the points as an array of vectors and a boolean array to classify the points compared with a give m, b
+    See classify method for details.
+    Return: none
     """
 
     def generate_set(self):
@@ -52,8 +54,15 @@ class DataSet:
 
 
     """
-
+    Generates a non-linearly classified data set.
+    See non-linear classify for details.
+    Params:
     """
+    def generate_quad_set(self, threshold, prob):
+        for count, point in enumerate(self.points):
+            point[2] = 1.0
+            self.bools[count] = self.nonlinear_classify(threshold, point, noise=prob)
+
 
 
     """Classified the points compared to the target function.
