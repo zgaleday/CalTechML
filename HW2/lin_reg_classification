@@ -34,7 +34,20 @@ def linear_regression(data_set, target):
     return w
 
 
-data_set = DataSet(10)
+def error_in(data_set, g):
+    """Method to determine the in sample error of the linear regression classification method.
+
+    Params: DataSet object, and the vector for output from linear_regression method
+    Return: The in sample error probability
+    """
+    error = 0.0
+    for point in data_set.points:
+        if not data_set.compare(point, g):
+            error += 1
+    return error / data_set.size
+
+
+data_set = DataSet(100)
 g = linear_regression(data_set, generate_target(data_set))
-print(g)
+print(error_in(data_set, g))
 data_set.visualize_hypoth(g)
