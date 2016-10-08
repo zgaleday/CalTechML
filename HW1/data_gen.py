@@ -26,11 +26,15 @@ class DataSet:
 
 
     def new_set(self):
-        self.target_function()
+        if self.linear:
+            self.target_function()
         for count, point in enumerate(self.points):
             point[0] = np.random.uniform(-1, 1)
             point[1] = np.random.uniform(-1, 1)
-            self.classify(point, count)
+            if self.linear:
+                self.classify(point, count)
+            else:
+                self.bools[count] = self.nonlinear_classify(point)
 
     """
     Function generates a random line by choosing two points uniformly ([-1,1], [-1,1]) at random in 2D plane.
