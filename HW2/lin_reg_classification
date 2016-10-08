@@ -25,7 +25,7 @@ def linear_regression(data_set, target):
     """
     A method to computed the least squares linear regression for classification.
 
-    Params: DataSet object, target vector.
+    Params: DataSet object
     Return: g calculated using linear regression.
     """
     pseudo_inverse = np.linalg.pinv(data_set.points)
@@ -48,6 +48,23 @@ def error_in(data_set, g):
     return error / data_set.size
 
 
+def error_out(data_set, g):
+
+    """Calculated out of sample error of linear regression classification algorithm stocastically.
+
+    Tests 1000 randomly generated points and compares the classification of the LR classification alg and target.
+    Params: DataSet object.  Hypothesis vector.
+    Return: Stocastically determined out of sample error for LR classification algorithm.
+    """
+    error = 0.0
+    points = np.random.uniform(-1, 1, (1000, 3))
+    for point in points:
+        point[2] = 1
+        if not data_set.compare(point, g):
+            error += 1
+    return error / 1000
+
+
 def average_error(number, type="in"):
 
     """Method to calculate the in sample or out of sample error average over 1000 runs
@@ -68,4 +85,5 @@ def average_error(number, type="in"):
 
     return error
 
-print(average_error(1000))
+data_set = DataSet(100)
+print(error_out(data_set, linear_regression(data_set, generate_target(data_set))))
