@@ -112,6 +112,7 @@ class DataSet:
     Param: vector
     Return: None
     """
+
     def visualize_hypoth(self, g):
         self.plot_points()
         slope, inter = self.vector_to_standard(g)
@@ -129,3 +130,17 @@ class DataSet:
         b = (- 1 / w[1]) * w[2]
         return m, b
 
+
+    """
+    A function classify points according to a non-linear target.  Has a toggle function that either adds or removes noise
+    to the target function. Target will be of the form x^2 + y^2 - threshold
+    Params: Threshold of quad target (float), point to be classified.
+    Return: True if sign x_1^2 + x_2^2 - threshold positive, False otherwise.
+    """
+
+    def nonlinear_classify(self, threshold, point):
+        temp = np.sign(point[0] ** 2 + point[1] ** 2 - threshold)
+        if temp == 1:
+            return True
+        else:
+            return False
