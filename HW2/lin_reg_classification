@@ -1,6 +1,7 @@
 from HW1.data_gen import DataSet
 import numpy as np
 
+
 def generate_target(data_set):
 
     """A method used to set the target vector for the linear regression.
@@ -18,8 +19,22 @@ def generate_target(data_set):
 
     return target_vector
 
-"""
-A method to computed the least squares linear regression for classification.
-Params: DataSet object
-Return: g calculated using linear regression.
-"""
+
+def linear_regression(data_set, target):
+
+    """
+    A method to computed the least squares linear regression for classification.
+
+    Params: DataSet object, target vector.
+    Return: g calculated using linear regression.
+    """
+    pseudo_inverse = np.linalg.pinv(data_set.points)
+    w = np.dot(pseudo_inverse, target)
+
+    return w
+
+
+data_set = DataSet(10)
+g = linear_regression(data_set, generate_target(data_set))
+print(g)
+data_set.visualize_hypoth(g)
