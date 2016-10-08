@@ -10,6 +10,7 @@ class DataSet:
         self.size = size
         self.bools = np.ones(self.size, dtype=bool)
         self.points = np.random.uniform(-1, 1, (self.size, 3))
+        self.transform = np.empty((self.size, 6))
         self.target = [0, 0, 0]
         self.m = 0
         self.b = 0
@@ -34,6 +35,7 @@ class DataSet:
             if self.linear:
                 self.classify(point, count)
             else:
+                self.do_transform()
                 self.bools[count] = self.nonlinear_classify(point)
 
     """
@@ -47,6 +49,24 @@ class DataSet:
         self.m = (point_a[1] - point_b[1]) / (point_a[0] - point_b[0])
         self.b = point_a[1] - self.m * point_a[0]
         self.target = np.array([self.m, -1, self.b])
+
+
+    """
+    Function that generated the transform x, y, xy, x^2, y^2, 1 of the generate set of points.
+
+    Params: none
+    Return: none
+    """
+    def do_transform(self):
+        for index,point in enumerate(self.points):
+            self.transform[index][0] = point[0]
+            self.transform[index][1] = point[1]
+            self.transform[index][2] = point[1] * point[2]
+            self.transform[index][3] = point[0] ** 2
+            self.transform[index][4] = point[1] ** 2
+            self.transform[index][5] = 1
+
+
 
 
     """Picks what set to generate based on linear boolean in class init.
