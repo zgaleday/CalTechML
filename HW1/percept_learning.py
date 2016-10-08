@@ -58,7 +58,7 @@ def convergence_stats(number):
     t_average = 0.0
     e_average = 0.0
     data_set = DataSet(number)
-    for i in range(1, 1000):
+    for i in range(1000):
         data_set.new_set()
         w = np.array([0.0, 0.0, 0.0])
         temp, w = pla(w, data_set, "both")
@@ -85,5 +85,5 @@ def error(data_set, g):
             error += 1
     return error / 10000
 
-print(convergence_stats(10))
+
 
