@@ -51,6 +51,11 @@ class DataSet:
             self.classify(point, count)
 
 
+    """
+
+    """
+
+
     """Classified the points compared to the target function.
     If dot is positive then classified as True or +1. If dot negative
     classify as -1.
@@ -134,13 +139,15 @@ class DataSet:
     """
     A function classify points according to a non-linear target.  Has a toggle function that either adds or removes noise
     to the target function. Target will be of the form x^2 + y^2 - threshold
-    Params: Threshold of quad target (float), point to be classified.
+    Params: Threshold of quad target (float), point to be classified,
+    and noise in the classification (prob of miscalc 0-1).
     Return: True if sign x_1^2 + x_2^2 - threshold positive, False otherwise.
     """
 
-    def nonlinear_classify(self, threshold, point):
+    def nonlinear_classify(self, threshold, point, noise):
         temp = np.sign(point[0] ** 2 + point[1] ** 2 - threshold)
-        if temp == 1:
+        det = np.random.random()
+        if (temp == 1 and det < noise) or (temp != 1 and det > noise):
             return True
         else:
             return False
