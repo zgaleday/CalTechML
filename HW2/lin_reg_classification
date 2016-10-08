@@ -79,11 +79,13 @@ def average_error(number, type="in"):
         if type == "in":
             temp = error_in(data_set, linear_regression(data_set, generate_target(data_set)))
             error = (error * i + temp) / (i + 1)
+        elif type == "out":
+            temp = error_out(data_set, linear_regression(data_set, generate_target(data_set)))
+            error = (error * i + temp) / (i + 1)
         else:
-            # TODO
-            pass
-
+            raise ValueError("type must be the string 'in' or 'out'.")
     return error
 
-data_set = DataSet(100)
-print(error_out(data_set, linear_regression(data_set, generate_target(data_set))))
+
+print(average_error(100, type="out"))
+print(average_error(100))
