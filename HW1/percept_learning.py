@@ -1,6 +1,6 @@
 __author__ = 'zachary'
 import numpy as np
-from data_gen import DataSet
+from HW1.data_gen import DataSet
 
 """
 Takes two vectors as input.  The w vector or hypothesis vector and the misclassified point vector.
@@ -85,7 +85,5 @@ def error(data_set, g):
             error += 1
     return error / 10000
 
-data_set = DataSet(10)
-w = pla(np.array([0.0, 0.0, 0.0]), data_set, "vector")
-data_set.visualize_hypoth(w)
+print(convergence_stats(10))
 
