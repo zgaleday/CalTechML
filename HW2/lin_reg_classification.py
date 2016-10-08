@@ -35,7 +35,7 @@ def linear_regression(data_set, target):
     return w
 
 
-def error_in(data_set, g):
+def error_in(data_set, g, linear=True):
 
     """Method to determine the in sample error of the linear regression classification method.
 
@@ -43,9 +43,13 @@ def error_in(data_set, g):
     Return: The in sample error probability
     """
     error = 0.0
-    for point in data_set.points:
-        if not data_set.compare(point, g):
-            error += 1
+    for index, point in enumerate(data_set.points):
+        if linear:
+            if not data_set.compare(point, g):
+                error += 1
+        else:
+            if not data_set.check(index, g):
+                error += 1
     return error / data_set.size
 
 
@@ -105,4 +109,6 @@ def convergence_time(number):
     return t_average
 
 
-data_set =
+data_set = DataSet(1000, linear=False, threshold=0.6, noise=0.1)
+w= linear_regression(data_set, generate_target(data_set))
+print(error_in(data_set, w, linear=False))

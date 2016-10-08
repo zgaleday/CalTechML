@@ -86,4 +86,3 @@ def error(data_set, g):
     return error / 10000
 
 
-
