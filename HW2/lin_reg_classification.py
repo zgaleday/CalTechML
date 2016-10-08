@@ -1,6 +1,6 @@
 from HW1.data_gen import DataSet
 import numpy as np
-import HW1.percept_learning
+import HW1.percept_learning as pla
 
 
 def generate_target(data_set):
@@ -88,5 +88,21 @@ def average_error(number, type="in"):
     return error
 
 
-print(average_error(100, type="out"))
-print(average_error(100))
+def convergence_time(number):
+
+    """Use LR as output for start vector of PLA algorithm.  Outputs average time (1000 trials) of pla before convergence
+
+    Params: Number of points in data set
+    Return: Average time of convergence for modified PLA
+    """
+    t_average = 0.0
+    data_set = DataSet(number)
+    for i in range(1000):
+        data_set.new_set()
+        w = linear_regression(data_set, generate_target(data_set))
+        temp = pla.pla(w, data_set)
+        t_average = (t_average * i + temp) / (i + 1)
+    return t_average
+
+
+print(convergence_time(10))
