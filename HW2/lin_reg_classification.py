@@ -105,4 +105,4 @@ def convergence_time(number):
     return t_average
 
 
-print(convergence_time(10))
+data_set =

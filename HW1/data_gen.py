@@ -13,10 +13,13 @@ class DataSet:
         self.target = [0, 0, 0]
         self.m = 0
         self.b = 0
-        self.target_function()
-        self.generate_set()
+        self.linear = linear
         self.threshold = threshold
         self.noise = noise
+        if linear:
+            self.target_function()
+        self.generate_set()
+
 
 
     """Generates a new set of points and target function for the DataSet class"""
@@ -41,13 +44,24 @@ class DataSet:
         self.b = point_a[1] - self.m * point_a[0]
         self.target = np.array([self.m, -1, self.b])
 
+
+    """Picks what set to generate based on linear boolean in class init.
+    Generates linear if LINEAR is True non-linear otherwise.
+    """
+
+    def generate_set(self):
+        if self.linear:
+            self.linear_generate_set()
+        else:
+            self.quad_generate_set()
+
     """
     Generates the data set.
     See classify method for details.
     Return: none
     """
 
-    def generate_set(self):
+    def linear_generate_set(self):
         for count, point in enumerate(self.points):
             point[2] = 1.0
             self.classify(point, count)
@@ -58,10 +72,10 @@ class DataSet:
     See non-linear classify for details.
     Params:
     """
-    def generate_quad_set(self, threshold, prob):
+    def quad_generate_set(self):
         for count, point in enumerate(self.points):
             point[2] = 1.0
-            self.bools[count] = self.nonlinear_classify(threshold, point, noise=prob)
+            self.bools[count] = self.nonlinear_classify(point)
 
 
 
@@ -153,10 +167,10 @@ class DataSet:
     Return: True if sign x_1^2 + x_2^2 - threshold positive, False otherwise.
     """
 
-    def nonlinear_classify(self, threshold, point, noise):
-        temp = np.sign(point[0] ** 2 + point[1] ** 2 - threshold)
+    def nonlinear_classify(self, point):
+        temp = np.sign(point[0] ** 2 + point[1] ** 2 - self.threshold)
         det = np.random.random()
-        if (temp == 1 and det < noise) or (temp != 1 and det > noise):
+        if (temp == 1 and det < self.noise) or (temp != 1 and det > self.noise):
             return True
         else:
             return False
