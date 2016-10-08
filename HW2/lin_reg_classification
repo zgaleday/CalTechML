@@ -1,5 +1,6 @@
 from HW1.data_gen import DataSet
 import numpy as np
+import HW1.percept_learning
 
 
 def generate_target(data_set):
