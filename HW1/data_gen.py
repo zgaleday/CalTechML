@@ -19,6 +19,8 @@ class DataSet:
         self.noise = noise
         if linear:
             self.target_function()
+        else:
+            self.do_transform()
         self.generate_set()
 
 
@@ -121,7 +123,11 @@ class DataSet:
     Return: True if classification matches false otherwise
     """
     def check(self, index, h):
-        dot = np.dot(self.points[index], h)
+        if self.linear:
+            dot = np.dot(self.points[index], h)
+        else:
+            dot = np.dot(self.transform[index], h)
+
         if (dot > 0 and self.bools[index]) or (dot <= 0 and self.bools[index] == False):
             return True
         else:

@@ -21,7 +21,7 @@ def generate_target(data_set):
     return target_vector
 
 
-def linear_regression(data_set, target):
+def linear_regression(data_set):
 
     """
     A method to computed the least squares linear regression for classification.
@@ -29,13 +29,18 @@ def linear_regression(data_set, target):
     Params: DataSet object
     Return: g calculated using linear regression.
     """
-    pseudo_inverse = np.linalg.pinv(data_set.points)
-    w = np.dot(pseudo_inverse, target)
+    target = generate_target(data_set)
+    if data_set.linear:
+        pseudo_inverse = np.linalg.pinv(data_set.points)
+        w = np.dot(pseudo_inverse, target)
+    else:
+        pseudo_inverse = np.linalg.pinv(data_set.transform)
+        w = np.dot(pseudo_inverse, target)
 
     return w
 
 
-def error_in(data_set, g, linear=True):
+def error_in(data_set, g):
 
     """Method to determine the in sample error of the linear regression classification method.
 
@@ -44,7 +49,7 @@ def error_in(data_set, g, linear=True):
     """
     error = 0.0
     for index, point in enumerate(data_set.points):
-        if linear:
+        if data_set.linear:
             if not data_set.compare(point, g):
                 error += 1
         else:
@@ -70,7 +75,7 @@ def error_out(data_set, g):
     return error / 1000
 
 
-def average_error(number, type="in"):
+def average_error(number, type="in", linear=True, threshold=0.0, noise=0.0):
 
     """Method to calculate the in sample or out of sample error average over 1000 runs
 
@@ -78,14 +83,14 @@ def average_error(number, type="in"):
     Return: the average error over 1000 runs as a float
     """
     error = 0.0
-    data_set = DataSet(number)
+    data_set = DataSet(number, linear=linear, threshold=threshold, noise=noise)
     for i in range(1000):
         data_set.new_set()
         if type == "in":
-            temp = error_in(data_set, linear_regression(data_set, generate_target(data_set)))
+            temp = error_in(data_set, linear_regression(data_set))
             error = (error * i + temp) / (i + 1)
         elif type == "out":
-            temp = error_out(data_set, linear_regression(data_set, generate_target(data_set)))
+            temp = error_out(data_set, linear_regression(data_set))
             error = (error * i + temp) / (i + 1)
         else:
             raise ValueError("type must be the string 'in' or 'out'.")
@@ -103,12 +108,11 @@ def convergence_time(number):
     data_set = DataSet(number)
     for i in range(1000):
         data_set.new_set()
-        w = linear_regression(data_set, generate_target(data_set))
+        w = linear_regression(data_set)
         temp = pla.pla(w, data_set)
         t_average = (t_average * i + temp) / (i + 1)
     return t_average
 
 
-data_set = DataSet(1000, linear=False, threshold=0.6, noise=0.1)
-w= linear_regression(data_set, generate_target(data_set))
-print(error_in(data_set, w, linear=False))
+
+print(linear_regression(DataSet(1000, linear=False, threshold=0.6, noise = 0.1)))
