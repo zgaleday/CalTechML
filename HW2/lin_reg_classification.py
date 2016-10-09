@@ -68,10 +68,19 @@ def error_out(data_set, g):
     """
     error = 0.0
     points = np.random.uniform(-1, 1, (1000, 3))
-    for point in points:
-        point[2] = 1
-        if not data_set.compare(point, g):
-            error += 1
+    if data_set.linear:
+        for point in points:
+            point[2] = 1
+            if not data_set.compare(point, g):
+                error += 1
+    else:
+        transform = np.empty((1000, 6))
+        data_set.do_transform(transform, points)
+        for vector in transform:
+            dot = np.dot(vector, g)
+            if ((dot > 0 and data_set.nonlinear_classify(vector) == False)
+                or (dot <= 0 and data_set.nonlinear_classify(vector) == True)):
+                error += 1
     return error / 1000
 
 
@@ -115,4 +124,4 @@ def convergence_time(number):
 
 
 
-print(linear_regression(DataSet(1000, linear=False, threshold=0.6, noise = 0.1)))
+print(average_error(1000, type="out", linear=False, threshold=0.6, noise = 0.1))

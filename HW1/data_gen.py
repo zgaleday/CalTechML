@@ -20,7 +20,7 @@ class DataSet:
         if linear:
             self.target_function()
         else:
-            self.do_transform()
+            self.do_transform(self.transform, self.points)
         self.generate_set()
 
 
@@ -37,7 +37,7 @@ class DataSet:
             if self.linear:
                 self.classify(point, count)
             else:
-                self.do_transform()
+                self.do_transform(self.transform, self.points)
                 self.bools[count] = self.nonlinear_classify(point)
 
     """
@@ -59,14 +59,14 @@ class DataSet:
     Params: none
     Return: none
     """
-    def do_transform(self):
-        for index,point in enumerate(self.points):
-            self.transform[index][0] = point[0]
-            self.transform[index][1] = point[1]
-            self.transform[index][2] = point[1] * point[2]
-            self.transform[index][3] = point[0] ** 2
-            self.transform[index][4] = point[1] ** 2
-            self.transform[index][5] = 1
+    def do_transform(self, transform, array):
+        for index,point in enumerate(array):
+            transform[index][0] = point[0]
+            transform[index][1] = point[1]
+            transform[index][2] = point[1] * point[2]
+            transform[index][3] = point[0] ** 2
+            transform[index][4] = point[1] ** 2
+            transform[index][5] = 1
 
 
 
