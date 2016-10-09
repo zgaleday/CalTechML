@@ -124,4 +124,4 @@ def convergence_time(number):
 
 
 
-print(average_error(1000, type="out", linear=False, threshold=0.6, noise = 0.1))
+# print(average_error(1000, type="out", linear=False, threshold=0.6, noise = 0.1))
