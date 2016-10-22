@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def delta(n, epsilon, dvc):
 
@@ -28,7 +28,7 @@ def simple_growth(n, dvc):
 def vc_bound(n, dvc, d):
 
     """
-    Calculates the omega of the generalization bound using delta and simple growth.
+    Calculates the omega of the generalization bound using delta and simple growth under VC bound.
     :param n: see delta and simple_growth
     :param dvc: set delta
     :param d: value of the delta function
@@ -40,16 +40,44 @@ def vc_bound(n, dvc, d):
 def rp_bound(n, dvc, d):
 
     """
-    Calculates the omega of the generalization bound using delta and simple growth.
+    Calculates the omega of the generalization bound using delta and simple growth under rp bound.
     :param n: see delta and simple_growth
     :param dvc: set delta
     :param d: value of the delta function
     :return: the omega value of the generalization bound
     """
     log1 = np.log(2 * simple_growth(n, dvc))
-    log2 = np.log(1/d)
-    return np.sqrt(2 * log1 / n) + np.sqrt(2 / n *log2) + 1 / n
+    log2 = np.log(1 / d)
+    return np.sqrt(2 * log1 / n) + np.sqrt(2 / n *log2) + 1.0 / n
+
+def pvb_bound(n, dvc, d, epsilon):
+    """
+        Calculates the omega of the generalization bound using delta and simple growth pvb bound.
+        :param n: see delta and simple_growth
+        :param dvc: set delta
+        :param d: value of the delta function
+        :param epsilon: value of episilon (0, 1]
+        :return: the omega value of the generalization bound
+        """
+    log = np.log(6 * simple_growth(2 * n, dvc) / d)
+    return np.sqrt(1.0 / n * (2 * epsilon + log))
+
+def devroye_bound(n, dvc, d, epsilon):
+    """
+        Calculates the omega of the generalization bound using delta and simple growth devroye bound.
+        :param n: see delta and simple_growth
+        :param dvc: set delta
+        :param d: value of the delta function
+        :param epsilon: value of episilon (0, 1]
+        :return: the omega value of the generalization bound
+        """
+    log = np.log(4 * simple_growth(n ** 2, dvc) / d)
+    return np.sqrt(1.0 / (2 * n) * (4 * epsilon * (1 + epsilon) + log))
+
+def plot_bound():
+    for n in range(10,000):
+        plt.plot(vc_bound(n, 50, 0.05))
+    plt.show()
 
 
-
-
+plot_bound()
