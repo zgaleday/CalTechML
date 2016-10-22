@@ -1,12 +1,16 @@
-def delta(n, epsilon):
+import numpy as np
+
+def delta(n, epsilon, dvc):
 
     """
-    Calculated the delta constant in the generalization bound
+    Calculated the delta constant in the generalization bound using simple_growth
     :param n: Number of points (> 0)
     :param epsilon: epsilon of generalization function
+    :param dvc: see simple growth
     :return: the delta value in generalization bound
     """
-
+    exponent = np.exp(-(1.0 / 8.0) * epsilon ** 2 * n)
+    return 4 * simple_growth(n, dvc) * exponent
 
 def simple_growth(n, dvc):
 
@@ -16,6 +20,7 @@ def simple_growth(n, dvc):
     :param dvc: The VC dimension of the hypothesis set (> 0)
     :return: value of simplified growth function
     """
+    return -1
 
 def omega(n, epsilon, dvc):
 
@@ -26,4 +31,4 @@ def omega(n, epsilon, dvc):
     :param dvc: see simple growth
     :return: the omega value of the generalization bound
     """
-
+    return -1
