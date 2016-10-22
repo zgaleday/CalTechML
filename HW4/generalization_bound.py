@@ -25,7 +25,7 @@ def simple_growth(n, dvc):
     return n ** dvc
 
 
-def omega(n, epsilon, dvc):
+def vc_bound(n, epsilon, dvc):
 
     """
     Calculates the omega of the generalization bound using delta and simple growth.
@@ -38,7 +38,3 @@ def omega(n, epsilon, dvc):
     return 8.0 / n * log
 
 
-dvc = 10
-epsilon = 0.05
-for number in range(400000, 500000,10000):
-    print(number, delta(number, epsilon, dvc))
