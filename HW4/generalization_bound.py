@@ -46,38 +46,65 @@ def rp_bound(n, dvc, d):
     :param d: value of the delta function
     :return: the omega value of the generalization bound
     """
-    log1 = np.log(2 * simple_growth(n, dvc))
-    log2 = np.log(1 / d)
-    return np.sqrt(2 * log1 / n) + np.sqrt(2 / n *log2) + 1.0 / n
+    log1 = np.log(2.0 * simple_growth(n, dvc))
+    log2 = np.log(1.0 / d)
+    return np.sqrt(2.0 * log1 / n) + np.sqrt(2.0 / n * log2) + 1.0 / n
 
-def pvb_bound(n, dvc, d, epsilon):
+def pvb_bound(n, dvc, d):
     """
-        Calculates the omega of the generalization bound using delta and simple growth pvb bound.
+        Calculates the epsilon of the generalization bound using delta and simple growth pvb bound.
         :param n: see delta and simple_growth
         :param dvc: set delta
         :param d: value of the delta function
-        :param epsilon: value of episilon (0, 1]
-        :return: the omega value of the generalization bound
+        :return: the roots of epsilon
         """
-    log = np.log(6 * simple_growth(2 * n, dvc) / d)
-    return np.sqrt(1.0 / n * (2 * epsilon + log))
+    log = np.log(6.0 * simple_growth(2 * n, dvc) / d)
+    b = -1.0 / n * 2
+    c = -1.0/ n * log
+    rts = np.roots([1, b, c])
+    for root in rts:
+        if root > 0:
+            return root
 
-def devroye_bound(n, dvc, d, epsilon):
+
+def devroye_bound(n, dvc, d):
     """
         Calculates the omega of the generalization bound using delta and simple growth devroye bound.
         :param n: see delta and simple_growth
         :param dvc: set delta
         :param d: value of the delta function
-        :param epsilon: value of episilon (0, 1]
-        :return: the omega value of the generalization bound
+        :return: the roots of epsilon of the generalization bound
         """
-    log = np.log(4 * simple_growth(n ** 2, dvc) / d)
-    return np.sqrt(1.0 / (2 * n) * (4 * epsilon * (1 + epsilon) + log))
+    log = np.log(4.0) + dvc * np.log(n ** 2) - np.log(d)
+    a = 1.0 - 2.0 / n
+    b = -2.0 / n
+    c = -log / (2.0 * n)
+    rts = np.roots([a, b, c])
+    for root in rts:
+        if root > 0:
+            return root
 
 def plot_bound():
-    for n in range(10,000):
-        plt.plot(vc_bound(n, 50, 0.05))
+    vc = np.empty(10000)
+    rp = np.empty(10000)
+    pvb = np.empty(10000)
+    devroye = np.empty(10000)
+    for n in range(1, 10000):
+        vc[n] = vc_bound(n, 50, 0.05)
+        rp[n] = rp_bound(n, 50, 0.05)
+        pvb[n] = pvb_bound(n, 50, 0.05)
+        devroye[n] = devroye_bound(n, 50, 0.05)
+    plt.axis([0, 10, 0, 20])
+    plt.plot(vc, color='b', label="vc")
+    plt.plot(rp, color='r', label="rp")
+    plt.plot(pvb, color='black', label="pvb")
+    plt.plot(devroye, color='purple', label="devroye")
+    plt.legend()
     plt.show()
 
 
 plot_bound()
+print(vc_bound(5, 50, 0.05))
+print(rp_bound(5, 50, 0.05))
+print(pvb_bound(5, 50, 0.05))
+print(devroye_bound(5, 50, 0.05))
