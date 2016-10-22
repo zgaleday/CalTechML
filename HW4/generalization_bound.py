@@ -25,16 +25,31 @@ def simple_growth(n, dvc):
     return n ** dvc
 
 
-def vc_bound(n, epsilon, dvc):
+def vc_bound(n, dvc, d):
 
     """
     Calculates the omega of the generalization bound using delta and simple growth.
     :param n: see delta and simple_growth
-    :param epsilon: see dela
-    :param dvc: see simple growth
+    :param dvc: set delta
+    :param d: value of the delta function
     :return: the omega value of the generalization bound
     """
-    log = np.log(4 * simple_growth(n, dvc) / delta(n, epsilon, dvc))
-    return 8.0 / n * log
+    log = np.log(4 * simple_growth(2 * n, dvc) / d)
+    return np.sqrt(8.0 / n * log)
+
+def rp_bound(n, dvc, d):
+
+    """
+    Calculates the omega of the generalization bound using delta and simple growth.
+    :param n: see delta and simple_growth
+    :param dvc: set delta
+    :param d: value of the delta function
+    :return: the omega value of the generalization bound
+    """
+    log1 = np.log(2 * simple_growth(n, dvc))
+    log2 = np.log(1/d)
+    return np.sqrt(2 * log1 / n) + np.sqrt(2 / n *log2) + 1 / n
+
+
 
 
