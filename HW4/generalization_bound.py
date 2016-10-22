@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib as plt
 
 def delta(n, epsilon, dvc):
 
@@ -9,8 +10,8 @@ def delta(n, epsilon, dvc):
     :param dvc: see simple growth
     :return: the delta value in generalization bound
     """
-    exponent = np.exp(-(1.0 / 8.0) * epsilon ** 2 * n)
-    return 4 * simple_growth(n, dvc) * exponent
+    exponent = np.exp((-1 * (1.0 / 8.0)) * (epsilon ** 2) * n)
+    return 4 * simple_growth(2 * n, dvc) * exponent
 
 
 def simple_growth(n, dvc):
@@ -35,3 +36,9 @@ def omega(n, epsilon, dvc):
     """
     log = np.log(4 * simple_growth(n, dvc) / delta(n, epsilon, dvc))
     return 8.0 / n * log
+
+
+dvc = 10
+epsilon = 0.05
+for number in range(400000, 500000,10000):
+    print(number, delta(number, epsilon, dvc))
