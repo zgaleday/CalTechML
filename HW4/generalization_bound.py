@@ -33,4 +33,5 @@ def omega(n, epsilon, dvc):
     :param dvc: see simple growth
     :return: the omega value of the generalization bound
     """
-    return -1
+    log = np.log(4 * simple_growth(n, dvc) / delta(n, epsilon, dvc))
+    return 8.0 / n * log
