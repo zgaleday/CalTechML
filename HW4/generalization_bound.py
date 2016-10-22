@@ -12,6 +12,7 @@ def delta(n, epsilon, dvc):
     exponent = np.exp(-(1.0 / 8.0) * epsilon ** 2 * n)
     return 4 * simple_growth(n, dvc) * exponent
 
+
 def simple_growth(n, dvc):
 
     """
@@ -20,7 +21,8 @@ def simple_growth(n, dvc):
     :param dvc: The VC dimension of the hypothesis set (> 0)
     :return: value of simplified growth function
     """
-    return -1
+    return n ** dvc
+
 
 def omega(n, epsilon, dvc):
 
