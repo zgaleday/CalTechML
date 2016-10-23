@@ -1,31 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 
-def sine_compare(x, y):
-
-    """
-    Classifies points compared to sine function
-    :param x: x coord
-    :param y: y coord
-    :return: -1 if below or equal 1 otherwise
-    """
-    if np.sin(np.pi * x) <= y:
-        return -1
-    else:
-        return 1
-
-
-def avg_compare(avg, x, y):
-    """
-    Classifies points compared to avg * x function
-    :param x: x coord
-    :param y: y coord
-    :return: -1 if below or equal 1 otherwise
-    """
-    if avg * x <= y:
-        return -1
-    else:
-        return 1
 
 def linear_regression(points):
 
@@ -40,9 +16,14 @@ def linear_regression(points):
     x2 = points[2]
     y2 = points[3]
     x = np.array([[x1], [x2]])
-    target = ([sine_compare(x1, y1), sine_compare(x2, y2)])
+    target = ([[y1], [y2]])
     pseudo_inverse = np.linalg.pinv(x)
     a = np.dot(pseudo_inverse, target)
+    # plt.plot([-1, a], [1, a])
+    # plt.plot(x1, y1 , 'ro')
+    # plt.plot(x2, y2, 'ro')
+    # plt.axis([-1, 1, -1, 1])
+    # plt.show()
 
     return a
 
@@ -59,7 +40,7 @@ def repeats(trials):
         temp = np.random.uniform(-1, 1, 4)
         temp[1] = np.sin(np.pi * temp[0])
         temp[3] = np.sin(np.pi * temp[2])
-        result[trial] = linear_regression(np.random.uniform(-1, 1, 4))
+        result[trial] = linear_regression(temp)
 
     return result
 
@@ -71,23 +52,19 @@ def var(result, avg):
     :param avg: average hypothesis
     :return: the expected value of the variance
     """
-    expected = 0.0
+    expected = np.empty(result.size)
     for count, a in enumerate(result):
-        expected = (expected * count + (1.0 / 2.0) * integrate.quad(lambda x: (a * x - avg * x) ** 2, -1, 1)[0]) / (count + 1)
-    return expected
+        temp_var = 0.5 *integrate.quad((lambda x: ((avg * x - a * x) ** 2)), -1, 1)[0]
+        expected[count] = temp_var
+        # print(a, temp_var)
+    return np.average(expected)
 
 def bias(avg):
-    trials = 10000
-    error = 0.0
-    for trial in range(trials):
-        x = np.random.uniform(-1, 1)
-        y = np.random.uniform(-1, 1)
-        if sine_compare(x, y) != avg_compare(avg, x, y):
-            error += 1
-    return error / trials
+    return 0.5 * integrate.quad((lambda x: ((avg * x - np.sin(np.pi * x)) ** 2)), -1, 1)[0]
 
 a = repeats(100000)
 average = np.average(a)
 variance = var(a, average)
 print("Average: ", average)
 print("var: ", var(a, average))
+print("bias: ", bias(average))
