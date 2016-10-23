@@ -6,7 +6,7 @@ import scipy.integrate as integrate
 def linear_regression(points):
 
     """
-    A method to computed the least squares linear regression for classification for ax target.
+    A method to computed the least squares linear regression for ax target.
 
     Params: two sets of x,y coords in a 1x4 array
     Return: a calculated by LR.
