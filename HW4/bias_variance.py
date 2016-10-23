@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.integrate as integrate
 
 def sine_compare(x, y):
 
@@ -72,11 +73,21 @@ def var(result, avg):
     """
     expected = 0.0
     for count, a in enumerate(result):
-        expected = (expected * count + (a - avg) ** 2) / (count + 1)
+        expected = (expected * count + (1.0 / 2.0) * integrate.quad(lambda x: (a * x - avg * x) ** 2, -1, 1)[0]) / (count + 1)
     return expected
+
+def bias(avg):
+    trials = 10000
+    error = 0.0
+    for trial in range(trials):
+        x = np.random.uniform(-1, 1)
+        y = np.random.uniform(-1, 1)
+        if sine_compare(x, y) != avg_compare(avg, x, y):
+            error += 1
+    return error / trials
 
 a = repeats(100000)
 average = np.average(a)
 variance = var(a, average)
 print("Average: ", average)
-print("Variance: ", variance)
+print("var: ", var(a, average))
