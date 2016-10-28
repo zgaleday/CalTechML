@@ -6,7 +6,7 @@ gradient descent using the first order linearity approximation with a learning r
 of 0.1
 """
 
-def partion_wrt_u(u, v):
+def partial_wrt_u(u, v):
 
     """
     Evaluates the partial derivative wrt u for the given error function.  Returns the numerical value
@@ -20,7 +20,7 @@ def partion_wrt_u(u, v):
     return 2 * first_parenthesis * second_parenthesis
 
 
-def partion_wrt_v(u, v):
+def partial_wrt_v(u, v):
 
     """
     Evaluates the partial derivative wrt v for the given error function.  Returns the numerical value
@@ -32,3 +32,4 @@ def partion_wrt_v(u, v):
     first_parenthesis = u * np.exp(v) - 2 * v * np.exp(-u)
     second_parenthesis = u * np.exp(v) - 2 * np.exp(-u)
     return 2 * first_parenthesis * second_parenthesis
+
