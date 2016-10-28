@@ -1,0 +1,20 @@
+import numpy as np
+
+""""
+Method for minimizing the error with error fnctn E(u,v) = (ue^v - 2ve^-u)^2 with
+gradient descent using the first order linearity approximation with a learning rate
+of 0.1
+"""
+
+def partion_wrt_u(u, v):
+
+    """
+    Evaluates the partial derivative wrt u for the given error function.  Returns the numerical value
+    of the partial
+    :param u: current weight of u as float
+    :param v: current weight of v as float
+    :return: Numerical eval of partial 2(e^u + 2ve^-u)(ue^u - 2ve^-u)
+    """
+    first_parenthesis = np.exp(u) + 2 * v * np.exp(-u)
+    second_parenthesis = u * np.exp(u) - 2 * v * np.exp(-u)
+    return 2 * first_parenthesis * second_parenthesis
