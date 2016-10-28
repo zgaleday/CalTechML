@@ -33,3 +33,13 @@ def partial_wrt_v(u, v):
     second_parenthesis = u * np.exp(v) - 2 * np.exp(-u)
     return 2 * first_parenthesis * second_parenthesis
 
+
+def gradient_vector(u, v):
+    """
+    Method to calculate and return the gradient vector for E(u,v) at given weights
+    :param u: current weight u
+    :param v: current weight v
+    :return: [u', v']
+    """
+
+    return [partial_wrt_u(u, v), partial_wrt_v(u, v)]
