@@ -69,11 +69,13 @@ def gradient_descent_iterations(u, v, n, rate):
     :return: error after last iteration of gradient descent is completed
     """
     error = calculate_error(u,v)
-    for iterations in range(n):
-        u -= rate * partial_wrt_u(u, v)
-        v -= rate * partial_wrt_v(u, v)
+    for iteration in range(n):
+        old_u = u
+        old_v = v
+        u -= (rate * partial_wrt_u(old_u, old_v))
+        v -= (rate * partial_wrt_v(old_u, old_v))
         error = calculate_error(u, v)
     return error
 
 
-print(gradient_descent_iterations(1, 1, 0, .1))
+print(gradient_descent_iterations(1.0, 1.0, 17, .1))
