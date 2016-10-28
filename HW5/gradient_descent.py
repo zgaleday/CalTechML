@@ -42,7 +42,6 @@ def gradient_vector(u, v):
     :param v: current weight v
     :return: [u', v']
     """
-
     return [partial_wrt_u(u, v), partial_wrt_v(u, v)]
 
 
@@ -55,4 +54,26 @@ def calculate_error(u,v):
     :return: current value of the error function
     """
     parenthesis = u * np.exp(v) - 2 * v * np.exp(-u)
-    return (parenthesis ** 2)
+    return parenthesis ** 2
+
+
+def gradient_descent_iterations(u, v, n, rate):
+
+    """
+    Method to evaluate the value of the error after n iterations of gradient descent starting with weight u, v with
+    learning rate of rate.
+    :param u: starting weight of u
+    :param v: starting weight of v
+    :param n: number of iterations of gradient descent
+    :param rate: learning rate of gradient descent
+    :return: error after last iteration of gradient descent is completed
+    """
+    error = calculate_error(u,v)
+    for iterations in range(n):
+        u -= rate * partial_wrt_u(u, v)
+        v -= rate * partial_wrt_v(u, v)
+        error = calculate_error(u, v)
+    return error
+
+
+print(gradient_descent_iterations(1, 1, 0, .1))
