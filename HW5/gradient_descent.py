@@ -13,8 +13,22 @@ def partion_wrt_u(u, v):
     of the partial
     :param u: current weight of u as float
     :param v: current weight of v as float
-    :return: Numerical eval of partial 2(e^u + 2ve^-u)(ue^u - 2ve^-u)
+    :return: Numerical eval of partial 2(e^v + 2ve^-u)(ue^v - 2ve^-u)
     """
-    first_parenthesis = np.exp(u) + 2 * v * np.exp(-u)
-    second_parenthesis = u * np.exp(u) - 2 * v * np.exp(-u)
+    first_parenthesis = np.exp(v) + 2 * v * np.exp(-u)
+    second_parenthesis = u * np.exp(v) - 2 * v * np.exp(-u)
+    return 2 * first_parenthesis * second_parenthesis
+
+
+def partion_wrt_v(u, v):
+
+    """
+    Evaluates the partial derivative wrt v for the given error function.  Returns the numerical value
+    of the partial
+    :param u: current weight of u as float
+    :param v: current weight of v as float
+    :return: Numerical eval of partial 2(ue^v - 2ve^-u)(ue^v - 2e^-u)
+    """
+    first_parenthesis = u * np.exp(v) - 2 * v * np.exp(-u)
+    second_parenthesis = u * np.exp(v) - 2 * np.exp(-u)
     return 2 * first_parenthesis * second_parenthesis
