@@ -50,3 +50,20 @@ def point_wise_gd(y, x, w, rate):
     :return: weight vector at time t + 1 (single step of gradient descent
     """
     return np.subtract(w, rate * gradient(y, x, w))
+
+
+def run_epoch(classifications, points, w, rate):
+
+    """
+    Runs through a single epoch of SGD and returns the value of the current weight vector.
+    Goes through a random permutation of the x vectors in points.
+    :param classifications: an array of ints {-1, 1} for the classification of each point compared to target
+    :param points: array of x vectors in [-1, 1] x [-1, 1] space and organized as discussed in gradient (depends on DataSet)
+    :param w: weight vector [w_1, w_2, w_0] (Array of floats)
+    :param rate: Learning rate (float (0.0, 1.0])
+    :return: new weight vector after the epoch
+    """
+    np.random.permutation(points)
+    for count, point in enumerate(points):
+        w = point_wise_gd(classifications[count], point, w, rate)
+    return w
