@@ -3,7 +3,7 @@ from HW1.data_gen import DataSet
 
 """"
 Methods to do logistic regression in the 2D plane from [-1,1]x[-1,1].
-Error will be measured using the "cross entropy error"  function ln(1 +e^(-(y_n)transpose(w)x_n) at each time step
+Error will be measured using the "cross entropy error"  function ln(1 +e^(-(y_n)transpose(w)x_n).
 At each epoch the reg will go through each xi, yi pair in a random order.
 The alg will stop when the delta w is below 0.01 (measured at the end of an epoch)
 """
@@ -69,12 +69,13 @@ def run_epoch(classifications, points, w, rate):
     return w
 
 
-def sgd(data_set, rate):
+def sgd(data_set, rate, toggle=True):
 
     """
     Method to run full SGD on a set of points of size points.  Stops when delta(w) < 0.01
     :param size: number of points in the data set
     :param rate: Learning rate (float (0.0, 1.0])
+    :param toggle: toggle to return either epochs to converge(True) or w vector (False)
     :return: number of epochs to converge
     """
     classification = np.empty(data_set.size)
@@ -92,7 +93,10 @@ def sgd(data_set, rate):
         w_previous = w_current
         w_current = run_epoch(classification, data_set.points, w_current, rate)
         delta_w = np.subtract(w_previous, w_current)
-    return epochs
+    if toggle:
+        return epochs
+    else:
+        return w_current
 
 
 def average_epochs(size, rate, repeats):
@@ -111,4 +115,30 @@ def average_epochs(size, rate, repeats):
         data_set.new_set()
     return average
 
-print(average_epochs(100, .01, 1000))
+
+def error_out(training_size, test_size, rate, repeats):
+
+    """
+    Calculates the out of sample error for SGD hypothesis using repeats number of trials. Calculated with error function
+    ln(1 +e^(-(y_n)transpose(w)x_n)
+    :param training_size: Size of training set
+    :param test_size: Size of the test set
+    :param rate: learning rate for SGD
+    :param repeats: Number of monte-carlo trials used to calculate the error
+    :return: The average out of sample error of sgd with given params.
+    """
+    #TODO
+    pass
+
+
+def error_function(y, x, w):
+
+    """
+    Calculates the value of error for given points
+    :param y: Classification wrt to target (+ or - 1 only valid)
+    :param x: Point vector [x_1, x_2, x_0] (Array of floats)
+    :param w: weight vector [w_1, w_2, w_0] at time t(Array of floats)
+    :return: value of error function for these points
+    """
+    parenthesis = 1 + np.exp(-y * np.dot(w, x))
+    return np.log(parenthesis)
