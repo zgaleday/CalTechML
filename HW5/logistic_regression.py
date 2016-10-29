@@ -67,3 +67,30 @@ def run_epoch(classifications, points, w, rate):
     for count, point in enumerate(points):
         w = point_wise_gd(classifications[count], point, w, rate)
     return w
+
+
+def sgd(size, rate):
+
+    """
+    Method to run full SGD on a set of points of size points.  Stops when delta(w) < 0.01
+    :param size: number of points in the data set
+    :param rate: Learning rate (float (0.0, 1.0])
+    :return: number of epochs to converge
+    """
+    data_set = DataSet(size)
+    classification = np.empty(size)
+    for index, bool in enumerate(data_set.bools):
+        if bool == False:
+            classification[index] = -1
+        else:
+            classification[index] = 1
+    epochs = 0
+    w_previous = [1.0, 1.0, 1.0]
+    w_current = [0.0, 0.0, 0.0]
+    delta_w = np.subtract(w_previous, w_current)
+    while(np.linalg.norm(delta_w)):
+        epochs += 1
+        w_previous = w_current
+        w_current = run_epoch(classification, data_set.points, w_current, rate)
+        delta_w = np.subtract(w_previous, w_current)
+    return epochs
