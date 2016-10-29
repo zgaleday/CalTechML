@@ -170,5 +170,3 @@ def cross_entropy_error(w, data_set_out):
             error = (error * index + error_function(-1, point, w)) / (index + 1)
     return error
 
-
-print(error_out(100, 1000, .01, 100))
