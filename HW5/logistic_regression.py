@@ -25,8 +25,13 @@ def partial(y, x, w, index):
     Calculates the numerical value of the partial derivative wrt to the index into the weight vector.
     i.e. index 0 returns w_1', index 1 returns w_2', and index 2 returns w_0'
     :param y: Classification wrt to target (+ or - 1 only valid)
-    :param x: Point vector [x_1, x_2, x_0]
-    :param w: weight vector [w_1, w_2, w_0]
+    :param x: Point vector [x_1, x_2, x_0] (Array of floats)
+    :param w: weight vector [w_1, w_2, w_0] (Array of floats)
     :param index: index in weight vector to calculate the partial wrt (see above)
     :return: numerical value of the partial wrt index into w vector
     """
+    exponential = np.exp(-y * np.dot(w, x))
+    numerator = -y * x[index] * exponential
+    denominator = 1 + exponential
+
+    return numerator / denominator
