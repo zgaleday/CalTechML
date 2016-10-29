@@ -17,6 +17,7 @@ def gradient(y, x, w):
     :param w: weight vector [w_1, w_2, w_0]
     :return: the gradient vector numerically evaluated [w_1', w_2', w_0']
     """
+    return [partial(y, x, w, 0), partial(y, x, w, 1), partial(y, x, w, 2)]
 
 
 def partial(y, x, w, index):
