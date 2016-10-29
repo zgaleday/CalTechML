@@ -15,9 +15,9 @@ def gradient(y, x, w):
     :param y: Classification wrt to target (+ or - 1 only valid)
     :param x: Point vector [x_1, x_2, x_0]
     :param w: weight vector [w_1, w_2, w_0]
-    :return: the gradient vector numerically evaluated [w_1', w_2', w_0']
+    :return: the gradient vector numerically evaluated [w_1', w_2', w_0'] as np array
     """
-    return [partial(y, x, w, 0), partial(y, x, w, 1), partial(y, x, w, 2)]
+    return np.array([partial(y, x, w, 0), partial(y, x, w, 1), partial(y, x, w, 2)])
 
 
 def partial(y, x, w, index):
@@ -36,3 +36,17 @@ def partial(y, x, w, index):
     denominator = 1 + exponential
 
     return numerator / denominator
+
+
+def point_wise_gd(y, x, w, rate):
+
+    """
+    does a single timestep of gradient descent give a target value x vector and w(t). Calculates and returns w(t + 1)
+    using given learning rate
+    :param y: Classification wrt to target (+ or - 1 only valid)
+    :param x: Point vector [x_1, x_2, x_0] (Array of floats)
+    :param w: weight vector [w_1, w_2, w_0] at time t(Array of floats)
+    :param rate: Learning rate (float (0.0, 1.0])
+    :return: weight vector at time t + 1 (single step of gradient descent
+    """
+    return np.subtract(w, rate * gradient(y, x, w))
