@@ -142,3 +142,20 @@ def error_function(y, x, w):
     """
     parenthesis = 1 + np.exp(-y * np.dot(w, x))
     return np.log(parenthesis)
+
+
+def cross_entropy_error(w, data_set_out):
+
+    """
+    Returns the cross entropy error for out of sample
+    :param w: final hypothesis from sgd on given data_set_in
+    :param data_set_out: monte-carlo simulation set
+    :return: value of cross entropy error
+    """
+    error = 0.0
+    for index, point in enumerate(data_set_out):
+        if data_set_out.bools[index]:
+            error += error(1, point, w)
+        else:
+            error += error(-1, point, w)
+    return error / data_set_out.size

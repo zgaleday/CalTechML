@@ -6,7 +6,7 @@ class DataSet:
     """Class to generate and manipulate a uniform distribution in 2D with a defined target function
     (randomly generated)"""
 
-    def __init__(self, size, linear=True, threshold=0, noise=0):
+    def __init__(self, size, linear=True, threshold=0, noise=0, generate=True):
         self.size = size
         self.bools = np.ones(self.size, dtype=bool)
         self.points = np.random.uniform(-1, 1, (self.size, 3))
@@ -21,7 +21,8 @@ class DataSet:
             self.target_function()
         else:
             self.do_transform(self.transform, self.points)
-        self.generate_set()
+        if generate:
+            self.generate_set()
 
 
 
