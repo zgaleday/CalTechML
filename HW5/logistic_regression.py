@@ -85,8 +85,8 @@ def sgd(data_set, rate, toggle=True):
         else:
             classification[index] = 1
     epochs = 0
-    w_previous = [1.0, 1.0, 1.0]
-    w_current = [0.0, 0.0, 0.0]
+    w_previous = np.array([1.0, 1.0, 1.0])
+    w_current = np.array([0.0, 0.0, 0.0])
     delta_w = np.subtract(w_previous, w_current)
     while(np.linalg.norm(delta_w) >= 0.01):
         epochs += 1
@@ -127,8 +127,18 @@ def error_out(training_size, test_size, rate, repeats):
     :param repeats: Number of monte-carlo trials used to calculate the error
     :return: The average out of sample error of sgd with given params.
     """
-    #TODO
-    pass
+    data_set_in = DataSet(training_size, generate=False)
+    data_set_out = DataSet(test_size, generate=False)
+    error = 0.0
+    for trial in range(repeats):
+        data_set_in.target_function()
+        data_set_in.generate_set()
+        w = sgd(data_set_in, rate, toggle=False)
+        data_set_out.target = data_set_in.target
+        data_set_out.generate_set()
+        error = (error * trial + cross_entropy_error(w, data_set_out)) / (trial + 1)
+    return error
+
 
 
 def error_function(y, x, w):
@@ -153,9 +163,12 @@ def cross_entropy_error(w, data_set_out):
     :return: value of cross entropy error
     """
     error = 0.0
-    for index, point in enumerate(data_set_out):
+    for index, point in enumerate(data_set_out.points):
         if data_set_out.bools[index]:
-            error += error(1, point, w)
+            error = (error * index + error_function(1, point, w)) / (index + 1)
         else:
-            error += error(-1, point, w)
-    return error / data_set_out.size
+            error = (error * index + error_function(-1, point, w)) / (index + 1)
+    return error
+
+
+print(error_out(100, 1000, .01, 100))
