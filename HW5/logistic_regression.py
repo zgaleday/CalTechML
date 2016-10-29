@@ -69,7 +69,7 @@ def run_epoch(classifications, points, w, rate):
     return w
 
 
-def sgd(size, rate):
+def sgd(data_set, rate):
 
     """
     Method to run full SGD on a set of points of size points.  Stops when delta(w) < 0.01
@@ -77,8 +77,7 @@ def sgd(size, rate):
     :param rate: Learning rate (float (0.0, 1.0])
     :return: number of epochs to converge
     """
-    data_set = DataSet(size)
-    classification = np.empty(size)
+    classification = np.empty(data_set.size)
     for index, bool in enumerate(data_set.bools):
         if bool == False:
             classification[index] = -1
@@ -88,9 +87,28 @@ def sgd(size, rate):
     w_previous = [1.0, 1.0, 1.0]
     w_current = [0.0, 0.0, 0.0]
     delta_w = np.subtract(w_previous, w_current)
-    while(np.linalg.norm(delta_w)):
+    while(np.linalg.norm(delta_w) >= 0.01):
         epochs += 1
         w_previous = w_current
         w_current = run_epoch(classification, data_set.points, w_current, rate)
         delta_w = np.subtract(w_previous, w_current)
     return epochs
+
+
+def average_epochs(size, rate, repeats):
+
+    """
+    Returns the average number of epochs it takes for sgd to terminate given the rule defined in the spec above
+    :param size: number of points in the data set
+    :param rate: Learning rate (float (0.0, 1.0])
+    :param repeats: number of points in the average
+    :return: the average, number of epochs to converge
+    """
+    data_set = DataSet(size)
+    average = 0.0
+    for trial in range(repeats):
+        average = (average * trial + sgd(data_set, rate)) / (trial + 1)
+        data_set.new_set()
+    return average
+
+print(average_epochs(100, .01, 1000))
