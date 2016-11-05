@@ -3,6 +3,8 @@ Functions to read in the data set and preform linear regression for classificati
 (x1, x2) => (1, x1, x2, x1^2, x2^2, x1x2, abs(x1 - x2), abs(x1 + x2))
 Error on classification is defined as the fraction of misclassified points.
 """
+import numpy as np
+
 
 def read_file(filename):
 
@@ -12,8 +14,19 @@ def read_file(filename):
     :param filename: the file to read data from
     :return: array of points x1, x2 and array of classifications yi
     """
-    # TODO: Implement file reading functionality
-    pass
+    points = []
+    classification = []
+    file = open(filename, 'r')
+    for number, line in enumerate(file):
+        line = line.split()
+        point = []
+        for entry in line[:-1]:
+            point.append(float(entry))
+        points.append(point)
+        classification.append([float(line[-1])])
+
+    file.close()
+    return np.array(points), np.array(classification)
 
 
 def transform(points):
@@ -81,3 +94,4 @@ def classify_point(point, classification, g):
     pass
 
 
+print(read_file("in.dta")[0])
