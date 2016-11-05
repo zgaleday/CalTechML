@@ -51,6 +51,7 @@ def transform(points):
         transformed[index][7] = abs(x1 + x2)
     return transformed
 
+
 def regression_for_classification(points, classifications):
 
     """
@@ -60,8 +61,9 @@ def regression_for_classification(points, classifications):
     :param classifications: vector of classifications {-1, +1}
     :return: hypothesis vector
     """
-    # TODO: Implement linear regression for classification
-    pass
+    pseudo_inverse = np.linalg.pinv(points)
+    w = np.dot(pseudo_inverse, classifications)
+    return w
 
 
 def weight_decay_lr_classification(points, classifications, k):
@@ -104,4 +106,6 @@ def classify_point(point, classification, g):
     pass
 
 
-print(transform(read_file("in.dta")[0]))
+points, classifications = read_file("in.dta")
+points = transform(points)
+print(regression_for_classification(points, classifications))
