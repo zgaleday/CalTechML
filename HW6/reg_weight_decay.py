@@ -37,9 +37,19 @@ def transform(points):
     :param points: array of points (x1, x2)
     :return: array of points (1, x1, x2, x1^2, x2^2, x1x2, abs(x1 - x2), abs(x1 + x2))
     """
-    # TODO: Implement transform function
-    pass
-
+    transformed = np.empty([len(points), 8])
+    for index, point in enumerate(points):
+        x1 = point[0]
+        x2 = point[1]
+        transformed[index][0] = 1.0
+        transformed[index][1] = x1
+        transformed[index][2] = x2
+        transformed[index][3] = x1 ** 2
+        transformed[index][4] = x2 ** 2
+        transformed[index][5] = x1 * x2
+        transformed[index][6] = abs(x1 - x2)
+        transformed[index][7] = abs(x1 + x2)
+    return transformed
 
 def regression_for_classification(points, classifications):
 
@@ -94,4 +104,4 @@ def classify_point(point, classification, g):
     pass
 
 
-print(read_file("in.dta")[0])
+print(transform(read_file("in.dta")[0]))
