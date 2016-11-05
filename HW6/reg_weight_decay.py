@@ -75,8 +75,11 @@ def weight_decay_lr_classification(points, classifications, k):
     :param k: value of exponent for lambda
     :return: hypothesis vector resultant from LR with weight decay
     """
-    # TODO: Implement LR for classification with weight decay
-    pass
+    lam = 10 ** k
+    z_transposed_z = np.dot(points.transpose(), points)
+    inverse = np.linalg.inv(np.add(z_transposed_z, np.multiply(lam, np.identity(len(z_transposed_z)))))
+    pseudo_pseudo = np.dot(inverse, points.transpose())
+    return np.dot(pseudo_pseudo, classifications)
 
 
 def classification_error(points, classifications, g):
@@ -116,6 +119,6 @@ points, classifications = read_file("in.dta")
 points_out, classifications_out = read_file("out.dta")
 points = transform(points)
 points_out = transform(points_out)
-g = regression_for_classification(points, classifications)
+g = weight_decay_lr_classification(points, classifications, -1)
 print(classification_error(points, classifications, g))
 print(classification_error(points_out, classifications_out, g))
