@@ -89,8 +89,12 @@ def classification_error(points, classifications, g):
     :param g: hypothesis vector
     :return: fraction of points misclassified
     """
-    # TODO: Implement function to determine classification error in a set of points give hypothesis g
-    pass
+    misclassified = 0.0
+    for index, point in enumerate(points):
+        if classifications[index] != classify_point(point, g):
+            misclassified += 1
+
+    return misclassified / len(points)
 
 
 def classify_point(point, g):
@@ -109,5 +113,9 @@ def classify_point(point, g):
 
 
 points, classifications = read_file("in.dta")
+points_out, classifications_out = read_file("out.dta")
 points = transform(points)
+points_out = transform(points_out)
 g = regression_for_classification(points, classifications)
+print(classification_error(points, classifications, g))
+print(classification_error(points_out, classifications_out, g))
