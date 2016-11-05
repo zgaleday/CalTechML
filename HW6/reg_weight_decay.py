@@ -93,19 +93,21 @@ def classification_error(points, classifications, g):
     pass
 
 
-def classify_point(point, classification, g):
+def classify_point(point, g):
 
     """
     Function to classify a point under a given hypothesis. Out put is {-1, +1}
     :param point: point to classify (array of floats)
-    :param classification: +1 or -1 classification
     :param g: hypothesis to classify under
     :return: {-1, +1}
     """
-    # TODO: Implement function to classify point under given hypothesis
-    pass
+    sign = np.sign(np.dot(point, g))
+    if sign > 0:
+        return 1.0
+    else:
+        return -1.0
 
 
 points, classifications = read_file("in.dta")
 points = transform(points)
-print(regression_for_classification(points, classifications))
+g = regression_for_classification(points, classifications)
