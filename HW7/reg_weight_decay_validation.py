@@ -97,7 +97,7 @@ def weight_decay_lr_classification(points, classifications, k):
     return np.dot(pseudo_pseudo, classifications)
 
 
-def classification_error(points, classifications, g):
+def classification_error(points, classifications, g, terms=8):
 
     """
     Determines the classification error under a given hypothesis g on a set of points formatted as above (1, x1, ....)
@@ -105,33 +105,57 @@ def classification_error(points, classifications, g):
     :param points: points to determine classification error on
     :param classifications: vector of classifications {-1, +1}
     :param g: hypothesis vector
+    :param terms: number of terms being used in input set
     :return: fraction of points misclassified
     """
     misclassified = 0.0
     for index, point in enumerate(points):
-        if classifications[index] != classify_point(point, g):
+        if classifications[index] != classify_point(point, g, terms):
             misclassified += 1
 
     return misclassified / len(points)
 
 
-def classify_point(point, g):
+def classify_point(point, g, terms=8):
 
     """
     Function to classify a point under a given hypothesis. Out put is {-1, +1}
     :param point: point to classify (array of floats)
     :param g: hypothesis to classify under
+    :param terms: number of terms being used in input set
     :return: {-1, +1}
     """
-    sign = np.sign(np.dot(point, g))
+    sign = np.sign(np.dot(point[:terms], g))
     if sign > 0:
         return 1.0
     else:
         return -1.0
 
 
+def select_model(training, validation, training_classification, validation_classification):
+
+    """
+    Defines a method to select model complexity using training and validation set.
+    :param training: training set of points (format as described by transform)
+    :param validation: validation set of points (format as described by transform)
+    :param trainging_classification: classification vector for training set
+    :param validation_classification: classification vector for validation set
+    :return: the model complexitywith the least validation error
+    """
+    min = 1.1
+    min_k = -1
+    for k in range(4, 9):
+        w = regression_for_classification(training, training_classification, k)
+        error = classification_error(validation, validation_classification, w, k)
+        if error < min:
+            min = error
+            min_k = k
+    return min_k - 1
+
+
 points, classifications = read_file("in.dta")
 points_out, classifications_out = read_file("out.dta")
 points = transform(points)
 training, validation = split_set(points)
-print(regression_for_classification(points,classifications))
+training_class, validation_class = split_set(classifications)
+print(select_model(training, validation, training_class, validation_class))
