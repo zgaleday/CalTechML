@@ -140,17 +140,25 @@ def select_model(training, validation, training_classification, validation_class
     :param validation: validation set of points (format as described by transform)
     :param trainging_classification: classification vector for training set
     :param validation_classification: classification vector for validation set
-    :return: the model complexitywith the least validation error
+    :return: the model complexity with the least validation error, model complexity with least Eout
     """
-    min = 1.1
-    min_k = -1
+    min_val_error = 1.1
+    min_val_k = -1
+    points_out, classifications_out = read_file("out.dta")
+    points_out = transform(points_out)
+    min_eout = 1.1
+    min_eout_k = -1
     for k in range(4, 9):
         w = regression_for_classification(training, training_classification, k)
-        error = classification_error(validation, validation_classification, w, k)
-        if error < min:
-            min = error
-            min_k = k
-    return min_k - 1
+        error_val = classification_error(validation, validation_classification, w, k)
+        error_out = classification_error(points_out, classifications_out, w, k)
+        if error_val < min_val_error:
+            min_val_error = error_val
+            min_val_k = k
+        if error_out < min_eout:
+            min_eout = error_out
+            min_eout_k = k
+    return min_val_k - 1, min_eout_k - 1
 
 
 points, classifications = read_file("in.dta")
