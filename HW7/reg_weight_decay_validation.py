@@ -62,16 +62,21 @@ def split_set(points):
     """
     return points[:-10], points[-10:]
 
-def regression_for_classification(points, classifications):
+
+def regression_for_classification(points, classifications, terms=8):
 
     """
     Performs linear regression for classification of a set of points given the vector of classifications.
     Returns the hypothesis vector.
     :param points: array of points formatted such that last value in a point in the classification
     :param classifications: vector of classifications {-1, +1}
+    :param terms: number of terms to do LR on (default value == 8)
     :return: hypothesis vector
     """
-    pseudo_inverse = np.linalg.pinv(points)
+    copy = np.empty([len(points), terms])
+    for index, point in enumerate(points):
+        copy[index] = point[:terms]
+    pseudo_inverse = np.linalg.pinv(copy)
     w = np.dot(pseudo_inverse, classifications)
     return w
 
@@ -129,7 +134,4 @@ points, classifications = read_file("in.dta")
 points_out, classifications_out = read_file("out.dta")
 points = transform(points)
 training, validation = split_set(points)
-# points_out = transform(points_out)
-# g = weight_decay_lr_classification(points, classifications, -1)
-# print(classification_error(points, classifications, g))
-# print(classification_error(points_out, classifications_out, g))
+print(regression_for_classification(points,classifications))
