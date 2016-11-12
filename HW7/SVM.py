@@ -16,8 +16,12 @@ def generate_matrix(points, classifications):
     :param classifications: classifications of points on target {-1, 1}
     :return: N x N matrix for use in QP minimization
     """
-    # TODO: Implement generate matrix function
-
+    n = len(points)
+    n_by_n = np.array((n, n))
+    for i in range(n):
+        for j in range(n):
+            n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
+    return matrix(n_by_n)
 
 def linear_coefficient(N):
 
@@ -26,7 +30,7 @@ def linear_coefficient(N):
     :param N: dimension of vector
     :return: vector of negative 1s in N dimensional
     """
-    # TODO: Implement linear_coefficient method
+    return matrix(-1.0, (1, N))
 
 
 def quad_solve(quad_matrix, linear_coef):
