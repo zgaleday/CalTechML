@@ -74,8 +74,10 @@ def solver_ws(min_alpha, points, classifications):
     :param classifications: classifications of points {-1, 1}
     :return: w vector (N-dimensional) resultant from SVM
     """
-    # TODO: Implement solver_ws function
-
+    w = np.empty(2)
+    for i, alpha in enumerate(min_alpha):
+        w = np.add(alpha, np.multiply(classifications[i], points[i]))
+    return w
 
 def support_vector_index(min_alpha):
 
@@ -126,4 +128,5 @@ quad = generate_matrix(strip_points, classifications)
 lin = linear_coefficient(len(strip_points))
 constraints = generate_svm_constraints(len(strip_points))
 alpha = quad_solve(quad, lin, constraints, classifications)
-print(alpha)
+w = solver_ws(alpha, strip_points, classifications)
+print(w)
