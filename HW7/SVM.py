@@ -6,6 +6,7 @@ Dependencies on numpy and cvxopt (QP solver)
 import numpy as np
 from cvxopt import matrix
 from cvxopt import solvers
+from HW1.data_gen import DataSet
 
 
 def generate_matrix(points, classifications):
@@ -17,10 +18,10 @@ def generate_matrix(points, classifications):
     :return: N x N matrix for use in QP minimization
     """
     n = len(points)
-    n_by_n = np.array((n, n))
+    n_by_n = np.empty((n, n))
     for i in range(n):
         for j in range(n):
-            n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
+            n_by_n[i][j] = classifications[j] * classifications[i] * np.dot(points[j].T, points[i])
     return matrix(n_by_n)
 
 def linear_coefficient(N):
@@ -30,7 +31,9 @@ def linear_coefficient(N):
     :param N: dimension of vector
     :return: vector of negative 1s in N dimensional
     """
-    return matrix(-1.0, (1, N))
+    ones = np.ones(N)
+    ones *= -1
+    return matrix(ones)
 
 
 def generate_svm_constraints(n):
@@ -40,7 +43,7 @@ def generate_svm_constraints(n):
     :param n: number of data points
     :return: n + 2 x n matrix
     """
-    constraints = -1 * np.identity(n, float)
+    constraints = np.negative(np.identity(n, float))
 
     return matrix(constraints)
 
@@ -56,9 +59,10 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     :param classifications: classification vector (len n
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
-    min_vector = matrix(np.zeros((1, len(constraints))), tc='d')
-    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector, classifications.T, 0)
-    return alpha
+    min_vector = matrix(np.zeros((len(classifications))), tc='d')
+    print(min_vector)
+    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector, matrix(classifications.T), matrix([0.0]))
+    return alpha['x']
 
 
 def solver_ws(min_alpha, points, classifications):
@@ -107,3 +111,19 @@ def error(g, data_set):
     # TODO: Implement error function
 
 
+data_set = DataSet(10)
+strip_points = np.empty((len(data_set.points), 2))
+for index, point in enumerate(data_set.points):
+    strip_points[index][0] = point[0]
+    strip_points[index][1] = point[1]
+classifications = np.empty((len(data_set.bools), 1))
+for i, bool in enumerate(data_set.bools):
+    if bool:
+        classifications[i][0] = 1.0
+    else:
+        classifications[i][0] = -1.0
+quad = generate_matrix(strip_points, classifications)
+lin = linear_coefficient(len(strip_points))
+constraints = generate_svm_constraints(len(strip_points))
+alpha = quad_solve(quad, lin, constraints, classifications)
+print(alpha)
