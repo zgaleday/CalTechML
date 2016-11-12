@@ -33,13 +33,32 @@ def linear_coefficient(N):
     return matrix(-1.0, (1, N))
 
 
-def quad_solve(quad_matrix, linear_coef):
+def generate_svm_constraints(classifications):
+
+    """
+    Function to generate the constraint matrix for QP solution with conditions y.T alpha = 0 and alpha >= 0
+    :param classifications: classification vector
+    :return: n + 2 x n matrix
+    """
+    n = len(classifications)
+    constraints = np.array((n + 2, n))
+    constraints[0] = classifications.T
+    constraints[1] = -1 * classifications.T
+    bottom = np.identity(n, float)
+    for i in range(n):
+        constraints[i + 2] = -1 * bottom[i]
+
+    return matrix(constraints)
+
+
+def quad_solve(quad_matrix, linear_coef, constraints):
 
     """
     Does the quadratic minimization of alpha in hard SVM using quadratic matrix and linear coefficients as input.
     Subject to linear constraints: y.T alpha = 0 and 0 <= alpha <= infinity
     :param quad_matrix: NxN matrix (output from generate matrix
     :param linear_coef: the linear coefficients
+    :param constraints: contraint matrix for hard SVM (y.T alpha = 0 and a >= 0)
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
     # TODO: Implement quadratic solving method
