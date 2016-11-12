@@ -167,7 +167,7 @@ class DataSet:
     """
 
     def plot_points(self, plot=False):
-        #plt.plot([((-1 - self.b) / self.m), ((1 - self.b) / self.m)], [-1, 1], 'r')
+        plt.plot([((-1 - self.b) / self.m), ((1 - self.b) / self.m)], [-1, 1], 'r')
         for count, point in enumerate(self.points):
             if self.bools[count]:
                 plt.plot(point[0], point[1], 'bo')

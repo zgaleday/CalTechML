@@ -7,6 +7,7 @@ import numpy as np
 from cvxopt import matrix
 from cvxopt import solvers
 from HW1.data_gen import DataSet
+import HW1.percept_learning
 
 
 def generate_matrix(points, classifications):
@@ -21,7 +22,7 @@ def generate_matrix(points, classifications):
     n_by_n = np.empty((n, n))
     for i in range(n):
         for j in range(n):
-            n_by_n[i][j] = classifications[j] * classifications[i] * np.dot(points[j].T, points[i])
+            n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
     return matrix(n_by_n)
 
 def linear_coefficient(N):
@@ -31,9 +32,11 @@ def linear_coefficient(N):
     :param N: dimension of vector
     :return: vector of negative 1s in N dimensional
     """
-    ones = np.ones(N)
+    ones = np.ones((1, N))
     ones *= -1
-    return matrix(ones)
+    ones = matrix(ones.T)
+    print(ones)
+    return ones
 
 
 def generate_svm_constraints(n):
@@ -99,7 +102,9 @@ def solver_b(sv_index, points, classifications, w):
     :param w: w vector resultant from hard SVM
     :return: value of bias in hard SVM
     """
-    # TODO: Implement solver for bias in hard SVM
+    y = classifications[sv_index]
+    x = points[sv_index]
+    return (1.0 - y * np.dot(w.T, x)) / y
 
 
 def error(g, data_set):
@@ -129,4 +134,9 @@ lin = linear_coefficient(len(strip_points))
 constraints = generate_svm_constraints(len(strip_points))
 alpha = quad_solve(quad, lin, constraints, classifications)
 w = solver_ws(alpha, strip_points, classifications)
-print(w)
+b = solver_b(support_vector_index(alpha), strip_points, classifications, w)
+g = np.empty(3)
+g[0] = w[0]
+g[1] = w[1]
+g[2] = b
+data_set.visualize_hypoth(g)
