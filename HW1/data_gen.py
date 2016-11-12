@@ -17,6 +17,7 @@ class DataSet:
         self.linear = linear
         self.threshold = threshold
         self.noise = noise
+        self.both_sides = False
         if linear:
             self.target_function()
         else:
@@ -85,13 +86,22 @@ class DataSet:
     """
     Generates the data set.
     See classify method for details.
+    If all points on one side of target generates a new set
     Return: none
     """
 
     def linear_generate_set(self):
+        both = None
         for count, point in enumerate(self.points):
-            point[2] = 1.0
-            self.classify(point, count)
+            if count == 0:
+                both = self.classify(point, count)
+                point[2] = 1.0
+            else:
+                point[2] = 1.0
+                if both != self.classify(point, count):
+                    self.both_sides = True
+        if not self.both_sides:
+            self.new_set()
 
 
     """
@@ -115,8 +125,10 @@ class DataSet:
         dot = np.dot(point, self.target)
         if dot > 0:
             self.bools[index] = True
+            return True
         else:
             self.bools[index] = False
+            return False
 
 
     """Check if classification matches for target and given input vector
