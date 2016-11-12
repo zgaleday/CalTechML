@@ -60,7 +60,6 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
     min_vector = matrix(np.zeros((len(classifications))), tc='d')
-    print(min_vector)
     alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector, matrix(classifications.T), matrix([0.0]))
     return alpha['x']
 
@@ -86,7 +85,8 @@ def support_vector_index(min_alpha):
     :param min_alpha: the minimized alpha from quad_solver
     :return: index in points of a support vector
     """
-    # TODO: Implement support vector index function
+    return np.argmax(min_alpha)
+
 
 
 def solver_b(sv_index, points, classifications, w):
