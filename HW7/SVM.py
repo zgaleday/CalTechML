@@ -60,14 +60,14 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     """
     Does the quadratic minimization of alpha in hard SVM using quadratic matrix and linear coefficients as input.
     Subject to linear constraints: y.T alpha = 0 and 0 <= alpha <= infinity
-    :param quad_matrix: NxN matrix (output from generate matrix
-    :param linear_coef: the linear coefficients
-    :param constraints: constraint matrix for hard SVM (y.T alpha = 0 and a >= 0)
-    :param classifications: classification vector (len n
+    :param quad_matrix: NxN matrix (output from generate matrix (1/2 Q from the equation)
+    :param linear_coef: the linear coefficients (-1^T vector or linear coefficient)
+    :param constraints: constraint matrix for hard SVM (y.T alpha = 0 and a >= 0 (negative identity matrix)
+    :param classifications: classification vector ({-1, +1})
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
     solvers.options['show_progress'] = False
-    min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')
+    min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')         #zero vector set equal to constraints
     alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)
     return alpha['x']
 
