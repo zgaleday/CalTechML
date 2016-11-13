@@ -23,7 +23,8 @@ def generate_matrix(points, classifications):
     for i in range(n):
         for j in range(n):
             n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
-    return matrix(n_by_n)
+
+    return matrix(np.multiply(0.5, n_by_n))
 
 def linear_coefficient(N):
 
@@ -35,20 +36,23 @@ def linear_coefficient(N):
     ones = np.ones((1, N))
     ones *= -1
     ones = matrix(ones.T)
-    print(ones)
     return ones
 
 
-def generate_svm_constraints(n):
+def generate_svm_constraints(classifications):
 
     """
     Function to generate the constraint matrix for QP solution with conditions y.T alpha = 0 and alpha >= 0
     :param n: number of data points
     :return: n + 2 x n matrix
     """
-    constraints = np.negative(np.identity(n, float))
-
-    return matrix(constraints)
+    n = len(classifications)
+    constraints = np.empty((n + 2, n))
+    constraints[0] = classifications.T
+    constraints[1] = np.negative(classifications.T)
+    for index, row in enumerate(np.diag(-1 * np.ones(n))):
+        constraints[index + 2] = row
+    return matrix(constraints, tc='d')
 
 
 def quad_solve(quad_matrix, linear_coef, constraints, classifications):
@@ -62,8 +66,9 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     :param classifications: classification vector (len n
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
-    min_vector = matrix(np.zeros((len(classifications))), tc='d')
-    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector, matrix(classifications.T), matrix([0.0]))
+    solvers.options['show_progress'] = False
+    min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')
+    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)
     return alpha['x']
 
 
@@ -74,22 +79,48 @@ def solver_ws(min_alpha, points, classifications):
     :param min_alpha: result of quad solve (N-dimensional vector)
     :param points: points SVM on
     :param classifications: classifications of points {-1, 1}
-    :return: w vector (N-dimensional) resultant from SVM
+    :return: w vector (N-dimensional) resultant from SVM (normalized)
     """
-    w = np.empty(2)
+    w = np.zeros(len(points[0]))
     for i, alpha in enumerate(min_alpha):
-        w = np.add(alpha, np.multiply(classifications[i], points[i]))
-    return w
+        mult = alpha * classifications[i]
+        w = np.add(w, (mult * points[i]))
+    return norm_w(min_alpha, points, classifications, solver_b(svi(min_alpha)[0], points, classifications, w), w)
 
-def support_vector_index(min_alpha):
+
+def svi(min_alpha):
 
     """
-    Returns the index of a support vector
+    Returns the index of two support vector
     :param min_alpha: the minimized alpha from quad_solver
-    :return: index in points of a support vector
+    :return: index in points of two support vectors of diff classification
     """
-    return np.argmax(min_alpha)
+    max_index = np.argmax(min_alpha)
+    max_alpha = 0.0
+    max_index2 = -1
+    for index, alpha in enumerate(min_alpha):
+        if alpha > max_alpha and index != max_index and classifications[max_index] != classifications[index]:
+            max_index2 = index
+    return max_index, max_index2
 
+
+def norm_w(alpha, points, classifications, bias, w):
+
+    """
+    Returns the correct normalization of w s.t. support vectors are normalized to 1
+    :param alpha: output vector from QP minimization
+    :param points: data point
+    :param classifications: classification vector {-1, +1
+    :param w: w vector from sum of SVs
+    :return: normalized w
+    """
+    svi1, svi2 = svi(alpha)
+    skew = (classifications[svi1] * (np.dot(w.T, points[svi1]) + bias) - 1)
+    for index, a in enumerate(alpha):
+        if index == svi1:
+            skew = np.multiply(a, skew)
+    w = np.subtract(w, skew)
+    return w
 
 
 def solver_b(sv_index, points, classifications, w):
@@ -104,7 +135,7 @@ def solver_b(sv_index, points, classifications, w):
     """
     y = classifications[sv_index]
     x = points[sv_index]
-    return (1.0 - y * np.dot(w.T, x)) / y
+    return (1.0 - (y * np.dot(w.T, x))) / y
 
 
 def error(g, data_set):
@@ -118,12 +149,15 @@ def error(g, data_set):
     # TODO: Implement error function
 
 
+
 data_set = DataSet(10)
+# strip_points = np.array([[1], [2], [3]])
 strip_points = np.empty((len(data_set.points), 2))
 for index, point in enumerate(data_set.points):
     strip_points[index][0] = point[0]
     strip_points[index][1] = point[1]
 classifications = np.empty((len(data_set.bools), 1))
+# classifications = np.array([[-1.0], [-1.0], [1.0]])
 for i, bool in enumerate(data_set.bools):
     if bool:
         classifications[i][0] = 1.0
@@ -131,10 +165,13 @@ for i, bool in enumerate(data_set.bools):
         classifications[i][0] = -1.0
 quad = generate_matrix(strip_points, classifications)
 lin = linear_coefficient(len(strip_points))
-constraints = generate_svm_constraints(len(strip_points))
+constraints = generate_svm_constraints(classifications)
 alpha = quad_solve(quad, lin, constraints, classifications)
 w = solver_ws(alpha, strip_points, classifications)
-b = solver_b(support_vector_index(alpha), strip_points, classifications, w)
+print(alpha)
+b = solver_b(svi(alpha)[0], strip_points, classifications, w)
+# g = np.array([b[0], w[0]])
+# print(np.dot([1.0, 2], g))
 g = np.empty(3)
 g[0] = w[0]
 g[1] = w[1]
