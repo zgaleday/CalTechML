@@ -68,11 +68,11 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     """
     solvers.options['show_progress'] = False
     min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')         #zero vector set equal to constraints
-    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)
-    return alpha['x']
+    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)['x']
+    return alpha
 
 
-def solver_ws(min_alpha, points, classifications):
+def solver_ws(min_alpha, points, classifications, alpha_normal=False):
 
     """
     Solves for the w using the minimized alpha vector from quad_solve
@@ -85,8 +85,12 @@ def solver_ws(min_alpha, points, classifications):
     for i, alpha in enumerate(min_alpha):
         mult = alpha * classifications[i]
         w = np.add(w, (mult * points[i]))
-    return norm_w(min_alpha, points, classifications, solver_b(svi(min_alpha)[0], points, classifications, w), w)
-
+    if not alpha_normal:
+        min_alpha = norm_alpha(min_alpha, points, classifications,
+                               solver_b(svi(min_alpha)[0], points, classifications, w), w)
+        return solver_ws(min_alpha, points, classifications, alpha_normal=True)
+    else:
+        return w
 
 def svi(min_alpha):
 
@@ -104,7 +108,7 @@ def svi(min_alpha):
     return max_index, max_index2
 
 
-def norm_w(alpha, points, classifications, bias, w):
+def norm_alpha(alpha, points, classifications, bias, w):
 
     """
     Returns the correct normalization of w s.t. support vectors are normalized to 1
@@ -119,8 +123,8 @@ def norm_w(alpha, points, classifications, bias, w):
     for index, a in enumerate(alpha):
         if index == svi1:
             skew = np.multiply(a, skew)
-    w = np.subtract(w, skew)
-    return w
+    alpha = np.subtract(alpha, skew)
+    return alpha
 
 
 def solver_b(sv_index, points, classifications, w):
