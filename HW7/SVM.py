@@ -153,31 +153,31 @@ def error(g, data_set):
     # TODO: Implement error function
 
 
-
-data_set = DataSet(10)
-# strip_points = np.array([[1], [2], [3]])
-strip_points = np.empty((len(data_set.points), 2))
-for index, point in enumerate(data_set.points):
-    strip_points[index][0] = point[0]
-    strip_points[index][1] = point[1]
-classifications = np.empty((len(data_set.bools), 1))
-# classifications = np.array([[-1.0], [-1.0], [1.0]])
-for i, bool in enumerate(data_set.bools):
-    if bool:
-        classifications[i][0] = 1.0
-    else:
-        classifications[i][0] = -1.0
-quad = generate_matrix(strip_points, classifications)
-lin = linear_coefficient(len(strip_points))
-constraints = generate_svm_constraints(classifications)
-alpha = quad_solve(quad, lin, constraints, classifications)
-w = solver_ws(alpha, strip_points, classifications)
-print(alpha)
-b = solver_b(svi(alpha)[0], strip_points, classifications, w)
-# g = np.array([b[0], w[0]])
-# print(np.dot([1.0, 2], g))
-g = np.empty(3)
-g[0] = w[0]
-g[1] = w[1]
-g[2] = b
-data_set.visualize_hypoth(g)
+def test_svm():
+    data_set = DataSet(10)
+    # strip_points = np.array([[1], [2], [3]])
+    strip_points = np.empty((len(data_set.points), 2))
+    for index, point in enumerate(data_set.points):
+        strip_points[index][0] = point[0]
+        strip_points[index][1] = point[1]
+    classifications = np.empty((len(data_set.bools), 1))
+    # classifications = np.array([[-1.0], [-1.0], [1.0]])
+    for i, bool in enumerate(data_set.bools):
+        if bool:
+            classifications[i][0] = 1.0
+        else:
+            classifications[i][0] = -1.0
+    quad = generate_matrix(strip_points, classifications)
+    lin = linear_coefficient(len(strip_points))
+    constraints = generate_svm_constraints(classifications)
+    alpha = quad_solve(quad, lin, constraints, classifications)
+    w = solver_ws(alpha, strip_points, classifications)
+    print(alpha)
+    b = solver_b(svi(alpha)[0], strip_points, classifications, w)
+    # g = np.array([b[0], w[0]])
+    # print(np.dot([1.0, 2], g))
+    g = np.empty(3)
+    g[0] = w[0]
+    g[1] = w[1]
+    g[2] = b
+    data_set.visualize_hypoth(g)
