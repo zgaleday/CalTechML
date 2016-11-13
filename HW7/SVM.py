@@ -87,7 +87,7 @@ def solver_ws(min_alpha, points, classifications, alpha_normal=False):
         w = np.add(w, (mult * points[i]))
     if not alpha_normal:
         min_alpha = norm_alpha(min_alpha, points, classifications,
-                               solver_b(svi(min_alpha)[0], points, classifications, w), w)
+                               solver_b(svi(min_alpha), points, classifications, w), w)
         return solver_ws(min_alpha, points, classifications, alpha_normal=True)
     else:
         return w
@@ -95,17 +95,11 @@ def solver_ws(min_alpha, points, classifications, alpha_normal=False):
 def svi(min_alpha):
 
     """
-    Returns the index of two support vector
+    Returns the index of a support vector
     :param min_alpha: the minimized alpha from quad_solver
-    :return: index in points of two support vectors of diff classification
+    :return: index in points of a support vector
     """
-    max_index = np.argmax(min_alpha)
-    max_alpha = 0.0
-    max_index2 = -1
-    for index, alpha in enumerate(min_alpha):
-        if alpha > max_alpha and index != max_index and classifications[max_index] != classifications[index]:
-            max_index2 = index
-    return max_index, max_index2
+    return np.argmax(min_alpha)
 
 
 def norm_alpha(alpha, points, classifications, bias, w):
@@ -118,10 +112,10 @@ def norm_alpha(alpha, points, classifications, bias, w):
     :param w: w vector from sum of SVs
     :return: normalized w
     """
-    svi1, svi2 = svi(alpha)
-    skew = (classifications[svi1] * (np.dot(w.T, points[svi1]) + bias) - 1)
+    sv_index = svi(alpha)
+    skew = (classifications[sv_index] * (np.dot(w.T, points[sv_index]) + bias) - 1)
     for index, a in enumerate(alpha):
-        if index == svi1:
+        if index == sv_index:
             skew = np.multiply(a, skew)
     alpha = np.subtract(alpha, skew)
     return alpha
@@ -142,15 +136,30 @@ def solver_b(sv_index, points, classifications, w):
     return (1.0 - (y * np.dot(w.T, x))) / y
 
 
-def error(g, data_set):
+def classification_error(data_set, points, g):
 
     """
-    Determines the fraction of misclassified points in a given data set under a given hypothesis
-    :param g: hypothesis vector (with constant included)
-    :param data_set: DataSet object
-    :return: fraction of points misclassified under current set
+    Determines the classification error under a given hypothesis g on a set of points formatted as above (1, x1, ....)
+    with give classification vector
+    :param points: points to determine classification error on
+    :param classifications: vector of classifications {-1, +1}
+    :param g: hypothesis vector
+    :return: fraction of points misclassified
     """
-    # TODO: Implement error function
+    misclassified = 0.0
+    for index, point in enumerate(points):
+        if not data_set.compare(point, g):
+            misclassified += 1
+    return misclassified / len(points)
+
+
+def compare_sv_pla():
+
+    """
+    Method to compare the out of sample preformance of SVM and PLA
+    :return: eout SVM, eout PLA as double
+    """
+
 
 
 def test_svm():
@@ -173,11 +182,14 @@ def test_svm():
     alpha = quad_solve(quad, lin, constraints, classifications)
     w = solver_ws(alpha, strip_points, classifications)
     print(alpha)
-    b = solver_b(svi(alpha)[0], strip_points, classifications, w)
+    b = solver_b(svi(alpha), strip_points, classifications, w)
     # g = np.array([b[0], w[0]])
     # print(np.dot([1.0, 2], g))
     g = np.empty(3)
     g[0] = w[0]
     g[1] = w[1]
     g[2] = b
-    data_set.visualize_hypoth(g)
+    out_set = DataSet(1000)
+    print(classification_error(data_set, out_set.points, g))
+
+print(test_svm())
