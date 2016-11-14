@@ -24,7 +24,7 @@ def generate_matrix(points, classifications):
         for j in range(n):
             n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
 
-    return n_by_n
+    return matrix(n_by_n)
 
 def linear_coefficient(N):
 
@@ -55,7 +55,16 @@ def generate_svm_constraints(classifications):
     return matrix(constraints, tc='d')
 
 
-def quad_solve(quad_matrix, linear_coef, constraints, classifications):
+def generate_min_vector(n):
+
+    """
+    Generates a zero vector of size n + 2
+    :param n: number of points
+    :return: zero vector on len n + 2 as cvxopt matrix
+    """
+    return matrix(np.array(np.zeros(n+2)))
+
+def quad_solve(quad_matrix, linear_coef, constraints, min_vector):
 
     """
     Does the quadratic minimization of alpha in hard SVM using quadratic matrix and linear coefficients as input.
@@ -63,12 +72,11 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     :param quad_matrix: NxN matrix (output from generate matrix (1/2 Q from the equation)
     :param linear_coef: the linear coefficients (-1^T vector or linear coefficient)
     :param constraints: constraint matrix for hard SVM (y.T alpha = 0 and a >= 0 (negative identity matrix)
-    :param classifications: classification vector ({-1, +1})
+    :param min_vector: the minimization vector
     :return: minimized alpha vector subject to the constrains defined by hard SVM (in real N-dimensional space)
     """
     solvers.options['show_progress'] = False
-    min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')         #zero vector set equal to constraints
-    alpha = solvers.qp(matrix(quad_matrix), linear_coef, constraints, min_vector)
+    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)
     alpha_array = []
     for a in alpha['x']:
         alpha_array.append(a)
@@ -173,7 +181,8 @@ def get_SVM_hypoth(data_set, test=False):
     quad = generate_matrix(strip_points, classifications)
     lin = linear_coefficient(len(strip_points))
     constraints = generate_svm_constraints(classifications)
-    alpha = quad_solve(quad, lin, constraints, classifications)
+    min_vector = generate_min_vector(len(strip_points))
+    alpha = quad_solve(quad, lin, constraints, min_vector)
     if np.count_nonzero(alpha) == 0:
         return None, None
     for i, a in enumerate(alpha):
@@ -223,6 +232,41 @@ def compare_svm_pla(size, iters):
     return svm_wins / iters
 
 
+def toysvm():
+    def to_matrix(a):
+        return matrix(a, tc='d')
+    X = np.array([
+        [0,2],
+        [2,2],
+        [2,0],
+        [3,0]
+        ])
+    y = np.array([-1,-1,1,1])
+    Qd = np.array([
+        [0,0,0,0],
+        [0,8,-4,-6],
+        [0,-4,4,6],
+        [0,-6,6,9],
+        ])
+    Ad = np.array([
+        [-1,-1,1,1],
+        [1,1,-1,-1],
+        [1,0,0,0],
+        [0,1,0,0],
+        [0,0,1,0],
+        [0,0,0,1]
+        ])
+    N = len(y)
+    P = to_matrix(Qd)
+    q = to_matrix(-(np.ones((N))))
+    G = to_matrix(-Ad)
+    h = to_matrix(np.array(np.zeros(N+2)))
+    alpha = quad_solve(P, q, G, h)
+    w = solver_ws(alpha, X, y)
+    b = solver_b(alpha, X, y, w)
+    print("alpha: ", alpha)
+    print("w vector: ", w)
+    print("b vector: ", b)
 
 def test_svm():
     data_set = DataSet(10)
@@ -232,4 +276,4 @@ def test_svm():
     data_set.visualize_hypoth(g_pla)
 
 
-test_svm()
+toysvm()
