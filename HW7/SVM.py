@@ -7,7 +7,7 @@ import numpy as np
 from cvxopt import matrix
 from cvxopt import solvers
 from HW1.data_gen import DataSet
-import HW1.percept_learning
+from HW1.percept_learning import pla
 
 
 def generate_matrix(points, classifications):
@@ -24,7 +24,7 @@ def generate_matrix(points, classifications):
         for j in range(n):
             n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
 
-    return matrix(np.multiply(0.5, n_by_n))
+    return n_by_n
 
 def linear_coefficient(N):
 
@@ -68,11 +68,28 @@ def quad_solve(quad_matrix, linear_coef, constraints, classifications):
     """
     solvers.options['show_progress'] = False
     min_vector = matrix(np.zeros(len(classifications) + 2), tc='d')         #zero vector set equal to constraints
-    alpha = solvers.qp(quad_matrix, linear_coef, constraints, min_vector)['x']
+    alpha = solvers.qp(matrix(quad_matrix), linear_coef, constraints, min_vector)
+    alpha_array = []
+    for a in alpha['x']:
+        alpha_array.append(a)
+    return clean_alpha(np.array(alpha_array))
+
+
+def clean_alpha(alpha):
+
+    """
+    Makes non SVs go to zero
+    :param alpha: alpha output from QP
+    :return: cleaned alpha vector
+    """
+    for i, a in enumerate(alpha):
+        if a < 0.001:
+            alpha[i] = 0
     return alpha
 
 
-def solver_ws(min_alpha, points, classifications, alpha_normal=False):
+
+def solver_ws(min_alpha, points, classifications):
 
     """
     Solves for the w using the minimized alpha vector from quad_solve
@@ -83,14 +100,8 @@ def solver_ws(min_alpha, points, classifications, alpha_normal=False):
     """
     w = np.zeros(len(points[0]))
     for i, alpha in enumerate(min_alpha):
-        mult = alpha * classifications[i]
-        w = np.add(w, (mult * points[i]))
-    if not alpha_normal:
-        min_alpha = norm_alpha(min_alpha, points, classifications,
-                               solver_b(svi(min_alpha), points, classifications, w), w)
-        return solver_ws(min_alpha, points, classifications, alpha_normal=True)
-    else:
-        return w
+        w += alpha * classifications[i] * points[i]
+    return w
 
 def svi(min_alpha):
 
@@ -102,26 +113,7 @@ def svi(min_alpha):
     return np.argmax(min_alpha)
 
 
-def norm_alpha(alpha, points, classifications, bias, w):
-
-    """
-    Returns the correct normalization of w s.t. support vectors are normalized to 1
-    :param alpha: output vector from QP minimization
-    :param points: data point
-    :param classifications: classification vector {-1, +1
-    :param w: w vector from sum of SVs
-    :return: normalized w
-    """
-    sv_index = svi(alpha)
-    skew = (classifications[sv_index] * (np.dot(w.T, points[sv_index]) + bias) - 1)
-    for index, a in enumerate(alpha):
-        if index == sv_index:
-            skew = np.multiply(a, skew)
-    alpha = np.subtract(alpha, skew)
-    return alpha
-
-
-def solver_b(sv_index, points, classifications, w):
+def solver_b(alpha, points, classifications, w):
 
     """
     Solves for b in equation y_n(w.Tx_n + b) = 1
@@ -131,9 +123,11 @@ def solver_b(sv_index, points, classifications, w):
     :param w: w vector resultant from hard SVM
     :return: value of bias in hard SVM
     """
-    y = classifications[sv_index]
-    x = points[sv_index]
-    return (1.0 - (y * np.dot(w.T, x))) / y
+    b = 0.0
+    for index, a in enumerate(alpha):
+        if a != 0:
+            b += ((1 - classifications[index] * np.dot(w.T, points[index])) / classifications[index])
+    return b / np.count_nonzero(alpha)
 
 
 def classification_error(data_set, points, g):
@@ -153,24 +147,24 @@ def classification_error(data_set, points, g):
     return misclassified / len(points)
 
 
-def compare_sv_pla():
+def check_kkt(alpha, classifications, w, points, bias):
+    for i in range(len(alpha)):
+        kkt = alpha[i] * (classifications[i] * (np.dot(w.T, points[i]) + bias) - 1)
+        print(kkt)
+
+
+def get_SVM_hypoth(data_set, test=False):
 
     """
-    Method to compare the out of sample preformance of SVM and PLA
-    :return: eout SVM, eout PLA as double
+    Returns a g vector compatable with DataSet methods
+    :param data_set: data set of points to train on
+    :return: g vector from SVM [w_1, w_2, b], number of support vectors
     """
-
-
-
-def test_svm():
-    data_set = DataSet(10)
-    # strip_points = np.array([[1], [2], [3]])
     strip_points = np.empty((len(data_set.points), 2))
     for index, point in enumerate(data_set.points):
         strip_points[index][0] = point[0]
         strip_points[index][1] = point[1]
     classifications = np.empty((len(data_set.bools), 1))
-    # classifications = np.array([[-1.0], [-1.0], [1.0]])
     for i, bool in enumerate(data_set.bools):
         if bool:
             classifications[i][0] = 1.0
@@ -180,16 +174,62 @@ def test_svm():
     lin = linear_coefficient(len(strip_points))
     constraints = generate_svm_constraints(classifications)
     alpha = quad_solve(quad, lin, constraints, classifications)
+    if np.count_nonzero(alpha) == 0:
+        return None, None
+    for i, a in enumerate(alpha):
+        if a != 0:
+            data_set.support_vector[i] = True
     w = solver_ws(alpha, strip_points, classifications)
-    print(alpha)
-    b = solver_b(svi(alpha), strip_points, classifications, w)
-    # g = np.array([b[0], w[0]])
-    # print(np.dot([1.0, 2], g))
+    b = solver_b(alpha, strip_points, classifications, w)
+    if test:
+        check_kkt(alpha, classifications, w, strip_points, b)
     g = np.empty(3)
     g[0] = w[0]
     g[1] = w[1]
     g[2] = b
-    out_set = DataSet(1000)
-    print(classification_error(data_set, out_set.points, g))
+    return g, np.count_nonzero(alpha)
 
-print(test_svm())
+
+def compare_svm_pla(size, iters):
+
+    """
+    Method to compare the out of sample preformance of SVM and PLA
+    :param size: number of data points in training set
+    :param iters: number of trials
+    :return: fraction of runs where svm better than pla (prints avg number of support vectors to console)
+    """
+    data_set = DataSet(size)
+    out_set = DataSet(1000)
+    svm_wins = 0.0
+    avg_svs = 0.0
+    i = 0
+    while i < iters:
+        w = np.array([0.0, 0.0, 0.0])
+        if i % 10 == 0:
+            print(i)
+        g_svm, support_vecs = get_SVM_hypoth(data_set)
+        if g_svm is None:
+            data_set.new_set()
+            continue
+        g_pla = pla(w, data_set, toggle="vector")
+        avg_svs += support_vecs
+        error_pla = classification_error(data_set, out_set.points, g_pla)
+        error_svm = classification_error(data_set, out_set.points, g_svm)
+        if error_svm < error_pla:
+            svm_wins += 1
+        data_set.new_set()
+        i += 1
+    print(avg_svs / iters)
+    return svm_wins / iters
+
+
+
+def test_svm():
+    data_set = DataSet(10)
+    g_svm, support_vecs = get_SVM_hypoth(data_set, test=False)
+    g_pla = pla(np.array([0.0, 0.0, 0.0]), data_set, toggle="vector")
+    data_set.visualize_hypoth(g_svm)
+    data_set.visualize_hypoth(g_pla)
+
+
+test_svm()

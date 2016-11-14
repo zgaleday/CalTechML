@@ -18,6 +18,7 @@ class DataSet:
         self.threshold = threshold
         self.noise = noise
         self.both_sides = False
+        self.support_vector = np.zeros(self.size, dtype=bool)
         if linear:
             self.target_function()
         else:
@@ -33,6 +34,7 @@ class DataSet:
     def new_set(self):
         if self.linear:
             self.target_function()
+        self.support_vector = np.zeros(self.size, dtype=bool)
         for count, point in enumerate(self.points):
             point[0] = np.random.uniform(-1, 1)
             point[1] = np.random.uniform(-1, 1)
@@ -169,10 +171,16 @@ class DataSet:
     def plot_points(self, plot=False):
         plt.plot([((-1 - self.b) / self.m), ((1 - self.b) / self.m)], [-1, 1], 'r')
         for count, point in enumerate(self.points):
-            if self.bools[count]:
-                plt.plot(point[0], point[1], 'bo')
+            if self.support_vector[count]:
+                if self.bools[count]:
+                    plt.plot(point[0], point[1], 'bx')
+                else:
+                    plt.plot(point[0], point[1], 'rx')
             else:
-                plt.plot(point[0], point[1], 'ro')
+                if self.bools[count]:
+                    plt.plot(point[0], point[1], 'bo')
+                else:
+                    plt.plot(point[0], point[1], 'ro')
         plt.ylim([-1, 1])
         plt.xlim([-1, 1])
         if plot:
