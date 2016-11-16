@@ -24,7 +24,7 @@ def generate_matrix(points, classifications):
         for j in range(n):
             n_by_n[i][j] = classifications[i] * classifications[j] * np.dot(points[i].T, points[j])
 
-    return matrix(n_by_n)
+    return matrix(n_by_n, tc='d')
 
 def linear_coefficient(N):
 
@@ -35,7 +35,7 @@ def linear_coefficient(N):
     """
     ones = np.ones((1, N))
     ones *= -1
-    ones = matrix(ones.T)
+    ones = matrix(ones.T, tc='d')
     return ones
 
 
@@ -62,7 +62,7 @@ def generate_min_vector(n):
     :param n: number of points
     :return: zero vector on len n + 2 as cvxopt matrix
     """
-    return matrix(np.array(np.zeros(n+2)))
+    return matrix(np.array(np.zeros(n+2)), tc='d')
 
 def quad_solve(quad_matrix, linear_coef, constraints, min_vector):
 
@@ -108,7 +108,7 @@ def solver_ws(min_alpha, points, classifications):
     """
     w = np.zeros(len(points[0]))
     for i, alpha in enumerate(min_alpha):
-        w += alpha * classifications[i] * points[i]
+        w += (np.multiply((alpha * classifications[i]), points[i]))
     return w
 
 def svi(min_alpha):
@@ -236,7 +236,7 @@ def toysvm():
     def to_matrix(a):
         return matrix(a, tc='d')
     X = np.array([
-        [0,2],
+        [0,0],
         [2,2],
         [2,0],
         [3,0]
@@ -276,4 +276,4 @@ def test_svm():
     data_set.visualize_hypoth(g_pla)
 
 
-toysvm()
+print(compare_svm_pla(100, 1000))
