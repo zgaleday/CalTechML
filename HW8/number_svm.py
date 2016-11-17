@@ -207,4 +207,3 @@ def problem_5_and_6():
         c *= 10
 
 
-problem_5()
