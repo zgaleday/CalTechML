@@ -152,7 +152,7 @@ class NumberSVM:
 
 my_svm = NumberSVM()
 my_svm.read_data("features.train")
-my_svm.number_v_all(0)
+my_svm.number_v_all(5)
 my_svm.set_poly_svm_params(2, 0.01)
 my_svm.svm_solver()
 print(len(my_svm.svm.support_vectors_))
