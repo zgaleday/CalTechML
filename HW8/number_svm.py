@@ -88,7 +88,20 @@ class NumberSVM:
         :param test: see methods above
         :return: void
         """
-        # TODO
+        if not test:
+            self.Y = np.zeros((self.N, 1), dtype='d')
+            for i, num in enumerate(self.numbers):
+                if num == a:
+                    self.Y[i][0] = 1
+                elif num == b:
+                    self.Y[i][0] = -1
+        else:
+            self.test_Y = np.zeros((self.test_points, 1), dtype='d')
+            for i, num in enumerate(self.test_numbers):
+                if num == a:
+                    self.test_Y[i][0] = 1
+                elif num == b:
+                    self.test_Y[i][0] = -1
 
     def poly_solver(self, Q, C):
         """
