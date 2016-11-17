@@ -17,14 +17,14 @@ class NumberSVM:
         """
         Defines instance variable for use in later methods
         """
-        self.X = np.empty(0)
-        self.numbers = np.empty(0)
-        self.Y = np.empty(0)
+        self.X = None
+        self.numbers = None
+        self.Y = None
         self.N = -1
         self.svm = None
-        self.test_X = np.empty(0)
-        self.test_numbers = np.empty(0)
-        self.test_Y = np.empty(0)
+        self.test_X = None
+        self.test_numbers = None
+        self.test_Y = None
         self.test_points = -1
 
     def read_data(self, filename, test=False):
@@ -111,6 +111,18 @@ class NumberSVM:
         :return: void
         """
         self.svm = svm.SVC(C=C, kernel='poly', degree=Q)
+
+    def svm_solver(self):
+        """
+        Solves current svm instance stored in the class this the self.X and self.Y params.
+        If params not set method or svm fails returns false otherwise returns true
+        :return: boolean of sucess of training
+        """
+        try:
+            self.svm.fit(self.X, self.Y)
+            return True
+        except:
+            return False
 
     def poly_cross_validation(self, Q, C):
         """
