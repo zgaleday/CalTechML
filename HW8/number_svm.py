@@ -133,21 +133,25 @@ class NumberSVM:
         """
         # TODO
 
-    def error_in(self):
+    def error(self, type='in'):
         """
         Method for determining the in sample error under the current SVM instance. If the current SVM instance is None
         returns -1
+        :param type: selecting in or out of sample
         :return: Error in measure if SVM exists -1 otherwise
         """
-        # TODO
+        if type == 'in':
+            try:
+                return self.svm.score(self.X, self.Y)
+            except:
+                return -1
+        elif type == 'out':
+            try:
+                return self.svm.score(self.test_X, self.test_Y)
+            except:
+                return -1
+        return -1
 
-    def error_out(self):
-        """
-        Method for determining the out-of-sample error under the current SVM instance. If the current SVM instance is
-        None returns -1
-        :return: Out-of-sample error measure if SVM exists -1 otherwise
-        """
-        # TODO
 
 
 my_svm = NumberSVM()
