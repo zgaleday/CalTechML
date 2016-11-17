@@ -17,13 +17,13 @@ class NumberSVM:
         """
         Defines instance variable for use in later methods
         """
-        self.X = np.empty(dtype='d')
-        self.numbers = np.empty()
-        self.Y = np.empty(dtype='d')
+        self.X = np.empty(0)
+        self.numbers = np.empty(0)
+        self.Y = np.empty(0)
         self.svm = None
-        self.text_X = np.empty(dtype='d')
-        self.test_numbers = np.empty()
-        self.test_Y = np.empty(dtype='d')
+        self.text_X = np.empty(0)
+        self.test_numbers = np.empty(0)
+        self.test_Y = np.empty(0)
 
     def read_data(self, filename, test=False):
         """
@@ -34,7 +34,20 @@ class NumberSVM:
         :param test: toggle to select whether set being read in is training or test test. If true test, else training
         :return: void
         """
-        # TODO
+        file = open(filename, 'r')
+        points = []
+        numbers = []
+        for number, line in enumerate(file):
+            line = line.split()
+            point = []
+            for entry in line[1:]:
+                point.append(np.double(entry))
+            points.append(point)
+            numbers.append([np.double(line[0])])
+
+        file.close()
+        self.X = np.array(points, dtype='d')
+        self.numbers = np.array(numbers, dtype='d')
 
     def number_v_all(self, number, test=False):
         """
@@ -89,3 +102,5 @@ class NumberSVM:
         :return: Out-of-sample error measure if SVM exists -1 otherwise
         """
         # TODO
+
+
