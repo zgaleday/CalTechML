@@ -103,7 +103,7 @@ class NumberSVM:
                 elif num == b:
                     self.test_Y[i][0] = -1
 
-    def set_svm_params(self, Q, C):
+    def set_poly_svm_params(self, Q, C):
         """
         Method to set the instance of svm stored in class
         :param Q: Order of the polynomial kernel to be used
