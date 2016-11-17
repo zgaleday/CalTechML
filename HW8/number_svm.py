@@ -46,8 +46,12 @@ class NumberSVM:
             numbers.append([np.double(line[0])])
 
         file.close()
-        self.X = np.array(points, dtype='d')
-        self.numbers = np.array(numbers, dtype='d')
+        if not test:
+            self.X = np.array(points, dtype='d')
+            self.numbers = np.array(numbers, dtype='d')
+        else:
+            self.test_X = np.array(points, dtype='d')
+            self.test_numbers = np.array(numbers, dtype='d')
 
     def number_v_all(self, number, test=False):
         """
@@ -57,7 +61,7 @@ class NumberSVM:
         :param test: toggle for training or in sample (true for setting test_Y false for Y)
         :return: void
         """
-        # TODO
+
 
     def number_v_number(self, a, b, test=False):
         """
