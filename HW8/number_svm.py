@@ -20,10 +20,12 @@ class NumberSVM:
         self.X = np.empty(0)
         self.numbers = np.empty(0)
         self.Y = np.empty(0)
+        self.N = -1
         self.svm = None
         self.text_X = np.empty(0)
         self.test_numbers = np.empty(0)
         self.test_Y = np.empty(0)
+        self.test_points = -1
 
     def read_data(self, filename, test=False):
         """
@@ -49,9 +51,11 @@ class NumberSVM:
         if not test:
             self.X = np.array(points, dtype='d')
             self.numbers = np.array(numbers, dtype='d')
+            self.N = len(self.numbers)
         else:
             self.test_X = np.array(points, dtype='d')
             self.test_numbers = np.array(numbers, dtype='d')
+            self.test_N = len(self.numbers)
 
     def number_v_all(self, number, test=False):
         """
@@ -61,6 +65,8 @@ class NumberSVM:
         :param test: toggle for training or in sample (true for setting test_Y false for Y)
         :return: void
         """
+        if not test:
+            self.Y = np.empty(())
 
 
     def number_v_number(self, a, b, test=False):
