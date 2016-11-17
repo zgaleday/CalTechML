@@ -142,21 +142,28 @@ class NumberSVM:
         """
         if type == 'in':
             try:
-                return self.svm.score(self.X, self.Y)
+                return 1 - self.svm.score(self.X, self.Y)
             except:
                 return -1
         elif type == 'out':
             try:
-                return self.svm.score(self.test_X, self.test_Y)
+                return 1 - self.svm.score(self.test_X, self.test_Y)
             except:
                 return -1
         return -1
 
 
+def problems_2_3():
+    """Method to find the error in for all number versus all classifications.
+    Prints error in to console:
+    """
+    num_set = range(10)
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.set_poly_svm_params(2, 0.01)
+    for num in num_set:
+        my_svm.number_v_all(num)
+        my_svm.svm_solver()
+        print("In sample error for {0} versus all: ".format(num), my_svm.error())
 
-my_svm = NumberSVM()
-my_svm.read_data("features.train")
-my_svm.number_v_all(5)
-my_svm.set_poly_svm_params(2, 0.01)
-my_svm.svm_solver()
-print(len(my_svm.svm.support_vectors_))
+problems_2_3()
