@@ -55,7 +55,7 @@ class NumberSVM:
         else:
             self.test_X = np.array(points, dtype='d')
             self.test_numbers = np.array(numbers, dtype='d')
-            self.test_points = len(self.numbers)
+            self.test_points = len(self.test_numbers)
 
     def number_v_all(self, number, test=False):
         """
@@ -184,7 +184,7 @@ def problem_4():
     print("The difference in the number of support vectors is: ", np.sum(my_svm.svm.n_support_) - zero_support_vectors)
 
 
-def problem_5():
+def problem_5_and_6():
     """
     Method to test num v num svm classification on 1 v 5 with varying C values.  Prints the in sample error to console.
     """
@@ -193,14 +193,17 @@ def problem_5():
     my_svm.read_data("features.test", test=True)
     my_svm.number_v_number(1, 5)
     my_svm.number_v_number(1, 5, test=True)
-    c = 0.001
+    c = 0.0001
     while c <= 1:
-        my_svm.set_poly_svm_params(2, c)
-        my_svm.svm_solver()
-        num_sv = np.sum(my_svm.svm.n_support_)
-        ein = my_svm.error()
-        eout = my_svm.error(type='out')
-        print("C = {0},  Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
+        q = 2
+        while q <= 5:
+            my_svm.set_poly_svm_params(q, c)
+            my_svm.svm_solver()
+            num_sv = np.sum(my_svm.svm.n_support_)
+            ein = my_svm.error()
+            eout = my_svm.error(type='out')
+            print("C = {0}, Q ={1}  Number SV = {2}, Ein = {3}, Eout = {4}".format(c, q, num_sv, ein, eout))
+            q += 3
         c *= 10
 
 
