@@ -103,14 +103,14 @@ class NumberSVM:
                 elif num == b:
                     self.test_Y[i][0] = -1
 
-    def poly_solver(self, Q, C):
+    def set_svm_params(self, Q, C):
         """
-        Method for solving the polynomial kernel soft-margin SVM problem
+        Method to set the instance of svm stored in class
         :param Q: Order of the polynomial kernel to be used
         :param C: Margin violation constraint
         :return: void
         """
-        # TODO
+        self.svm = svm.SVC(C=C, kernel='poly', degree=Q)
 
     def poly_cross_validation(self, Q, C):
         """
