@@ -66,19 +66,19 @@ class NumberSVM:
         :return: void
         """
         if not test:
-            self.Y = np.empty((self.N, 1), dtype='d')
+            self.Y = np.empty(self.N, dtype='d')
             for i, num in enumerate(self.numbers):
                 if num == number:
-                    self.Y[i][0] = 1
+                    self.Y[i] = 1
                 else:
-                    self.Y[i][0] = -1
+                    self.Y[i] = -1
         else:
-            self.test_Y = np.empty((self.test_points, 1), dtype='d')
+            self.test_Y = np.empty(self.test_points, dtype='d')
             for i, num in enumerate(self.test_numbers):
                 if num == number:
-                    self.test_Y[i][0] = 1
+                    self.test_Y[i] = 1
                 else:
-                    self.test_Y[i][0] = -1
+                    self.test_Y[i] = -1
 
     def number_v_number(self, a, b, test=False):
         """
@@ -89,19 +89,19 @@ class NumberSVM:
         :return: void
         """
         if not test:
-            self.Y = np.zeros((self.N, 1), dtype='d')
+            self.Y = np.zeros(self.N, dtype='d')
             for i, num in enumerate(self.numbers):
                 if num == a:
-                    self.Y[i][0] = 1
+                    self.Y[i] = 1
                 elif num == b:
-                    self.Y[i][0] = -1
+                    self.Y[i] = -1
         else:
-            self.test_Y = np.zeros((self.test_points, 1), dtype='d')
+            self.test_Y = np.zeros(self.test_points, dtype='d')
             for i, num in enumerate(self.test_numbers):
                 if num == a:
-                    self.test_Y[i][0] = 1
+                    self.test_Y[i] = 1
                 elif num == b:
-                    self.test_Y[i][0] = -1
+                    self.test_Y[i] = -1
 
     def set_poly_svm_params(self, Q, C):
         """
@@ -150,3 +150,9 @@ class NumberSVM:
         # TODO
 
 
+my_svm = NumberSVM()
+my_svm.read_data("features.train")
+my_svm.number_v_all(0)
+my_svm.set_poly_svm_params(2, 0.01)
+my_svm.svm_solver()
+print(len(my_svm.svm.support_vectors_))
