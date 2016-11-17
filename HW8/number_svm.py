@@ -166,4 +166,21 @@ def problems_2_3():
         my_svm.svm_solver()
         print("In sample error for {0} versus all: ".format(num), my_svm.error())
 
-problems_2_3()
+
+def problem_4():
+    """
+    Method to determine the difference in the number of support vectors resultant from one versus all (lowest Ein) and
+     zero versus all (highest Ein).
+     Prints to console
+    """
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.set_poly_svm_params(2, 0.01)
+    my_svm.number_v_all(0)
+    my_svm.svm_solver()
+    zero_support_vectors = np.sum(my_svm.svm.n_support_)
+    my_svm.number_v_all(1)
+    my_svm.svm_solver()
+    print("The difference in the number of support vectors is: ", np.sum(my_svm.svm.n_support_) - zero_support_vectors)
+
+problem_4()
