@@ -183,4 +183,17 @@ def problem_4():
     my_svm.svm_solver()
     print("The difference in the number of support vectors is: ", np.sum(my_svm.svm.n_support_) - zero_support_vectors)
 
-problem_4()
+
+def test_num_v_num():
+    """
+    Method to test num v num svm classification on 1 v 5.  Prints the in sample error to console.
+    """
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.set_poly_svm_params(2, 0.01)
+    my_svm.number_v_number(1, 5)
+    my_svm.svm_solver()
+    print(my_svm.error())
+
+
+test_num_v_num()
