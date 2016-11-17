@@ -22,7 +22,7 @@ class NumberSVM:
         self.Y = np.empty(0)
         self.N = -1
         self.svm = None
-        self.text_X = np.empty(0)
+        self.test_X = np.empty(0)
         self.test_numbers = np.empty(0)
         self.test_Y = np.empty(0)
         self.test_points = -1
@@ -55,7 +55,7 @@ class NumberSVM:
         else:
             self.test_X = np.array(points, dtype='d')
             self.test_numbers = np.array(numbers, dtype='d')
-            self.test_N = len(self.numbers)
+            self.test_points = len(self.numbers)
 
     def number_v_all(self, number, test=False):
         """
@@ -66,8 +66,19 @@ class NumberSVM:
         :return: void
         """
         if not test:
-            self.Y = np.empty(())
-
+            self.Y = np.empty((self.N, 1), dtype='d')
+            for i, num in enumerate(self.numbers):
+                if num == number:
+                    self.Y[i][0] = 1
+                else:
+                    self.Y[i][0] = -1
+        else:
+            self.test_Y = np.empty((self.test_points, 1), dtype='d')
+            for i, num in enumerate(self.test_numbers):
+                if num == number:
+                    self.test_Y[i][0] = 1
+                else:
+                    self.test_Y[i][0] = -1
 
     def number_v_number(self, a, b, test=False):
         """
