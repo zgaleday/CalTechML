@@ -161,7 +161,7 @@ class NumberSVM:
             temp_X = np.append(self.X[0: self.index_array[i], 0:2], self.X[self.index_array[i+1]:, 0:2], axis=0)
             temp_Y = np.append(self.Y[0: self.index_array[i]], self.Y[self.index_array[i+1]:])
             self.svm.fit(temp_X, temp_Y)
-            e_cv += 1 - self.svm.score(temp_X, temp_Y)
+            e_cv += 1 - self.svm.score(temp_X, temp_Y)  # Fix s.t. uses left out set for error....
         temp_X = self.X[:self.index_array[9]]
         temp_Y = self.Y[:self.index_array[9]]
         self.svm.fit(temp_X, temp_Y)
