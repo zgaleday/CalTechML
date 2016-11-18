@@ -296,6 +296,30 @@ def problem_5_and_6():
         c *= 10
 
 
+def problem_7():
+    """
+    Method to determine the C value that most commonly has the lowest E_cv over 100 runs
+    """
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.number_v_number(1, 5)
+    c_vals = np.array([0.0001, 0.001, 0.01, 0.1, 1.0])
+    best_c = np.zeros(5)
+    for i in range(100):
+        min_c = 10
+        min_ecv = 1
+        for i, c in enumerate(c_vals):
+            my_svm.set_poly_svm_params(2, c)
+            e_cv = my_svm.poly_cross_validation(ova=False)
+            if e_cv < min_ecv:
+                min_c = i
+                min_ecv = e_cv
+        best_c[min_c] += 1
+        my_svm.shuffle_arrays(ova=False)
+    for i, c in enumerate(c_vals):
+        print("C = {0} was chosen {1} times".format(c, best_c[i]))
+
+
 def problem_8(trials):
     """
     Methods to solve problems 7 and 8
@@ -335,4 +359,4 @@ def problems_9_and_10():
         print("C = {0}, Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
         c *= 100
 
-problem_8(1000)
+problem_7()
