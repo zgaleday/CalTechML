@@ -121,12 +121,19 @@ class NumberSVM:
 
     def set_poly_svm_params(self, Q, C):
         """
-        Method to set the instance of svm stored in class
+        Method to set the instance of svm stored in class to poly kernel of degree Q and margin C
         :param Q: Order of the polynomial kernel to be used
         :param C: Margin violation constraint
         :return: void
         """
         self.svm = svm.SVC(C=C, kernel='poly', degree=Q)
+
+    def set_rbf_svm(self, C):
+        """
+        Method to set the instance of svm stored in class to rbf kernel
+        :param C: Margin violation constraint
+        """
+        self.svm = svm.SVC(C=C)
 
     def svm_solver(self):
         """
@@ -228,7 +235,7 @@ def problem_5_and_6():
             num_sv = np.sum(my_svm.svm.n_support_)
             ein = my_svm.error()
             eout = my_svm.error(type='out')
-            print("C = {0}, Q ={1}  Number SV = {2}, Ein = {3}, Eout = {4}".format(c, q, num_sv, ein, eout))
+            print("C = {0}, Q ={1},  Number SV = {2}, Ein = {3}, Eout = {4}".format(c, q, num_sv, ein, eout))
             q += 3
         c *= 10
 
@@ -240,7 +247,18 @@ def problems_7_and_8():
     my_svm = NumberSVM()
     my_svm.read_data("features.train")
     my_svm.number_v_number(1, 5)
-    my_svm.set_poly_svm_params(2, .01)
-    print(my_svm.poly_cross_validation())
+
+    c = 0.0001
+    while c <= 1:
+        my_svm.set_poly_svm_params(2, c)
+        e_cv = 0
+        for i in range(100):
+            if i % 10 == 0:
+                print(i)
+            e_cv += my_svm.poly_cross_validation()
+            my_svm.shuffle_arrays()
+
+        print("C = {0}, E_cv = {1}".format(c, e_cv / 100))
+        c *= 10
 
 problems_7_and_8()
