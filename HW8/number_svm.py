@@ -104,33 +104,40 @@ class NumberSVM:
                 elif num == b:
                     Y.append(np.double(-1))
                     NVN_X.append(self.X[i])
+            self.NVM_X = np.array(NVN_X, dtype='d')
+            self.Y = np.array(Y, dtype='d')
+            n = len(self.NVM_X)
+            for i, j in enumerate(range(0, n, np.int(n / 10))):
+                self.NVM_index_array[i] = np.int(j)
         else:
-            self.test_Y = np.zeros(self.test_points, dtype='d')
             for i, num in enumerate(self.test_numbers):
                 if num == a:
                     Y.append(np.double(1))
-                    NVN_X.append(self.X[i])
+                    NVN_X.append(self.test_X[i])
                 elif num == b:
                     Y.append(np.double(-1))
-                    NVN_X.append(self.X[i])
-        self.NVM_X = np.array(NVN_X, dtype='d')
-        self.Y = np.array(Y, dtype='d')
-        n = len(self.NVM_X)
-        for i, j in enumerate(range(0, n, np.int(n / 10))):
-            self.NVM_index_array[i] = np.int(j)
+                    NVN_X.append(self.test_X[i])
+            self.test_NVN_X = np.array(NVN_X, dtype='d')
+            self.test_Y = np.array(Y, dtype='d')
 
-    def shuffle_arrays(self):
+
+    def shuffle_arrays(self, ova=True):
         """
         Shuffles the self.X., self.Y, and self.numbers arrays.  The shuffle will occur such that self.X[i], self.Y[i]
         and self.numbers[i] corresponds to the same entry in the input set before the shuffle
         :return: void
         """
         state = np.random.get_state()
-        np.random.shuffle(self.X)
-        np.random.set_state(state)
-        np.random.shuffle(self.Y)
-        np.random.set_state(state)
-        np.random.shuffle(self.numbers)
+        if ova:
+            np.random.shuffle(self.X)
+            np.random.set_state(state)
+            np.random.shuffle(self.Y)
+            np.random.set_state(state)
+            np.random.shuffle(self.numbers)
+        else:
+            np.random.shuffle(self.NVM_X)
+            np.random.set_state(state)
+            np.random.shuffle(self.Y)
 
     def set_poly_svm_params(self, Q, C):
         """
@@ -209,7 +216,7 @@ class NumberSVM:
         return e_cv / 10
 
 
-    def error(self, type='in'):
+    def error(self, type='in', ova=True):
         """
         Method for determining the in sample error under the current SVM instance. If the current SVM instance is None
         returns -1
@@ -218,12 +225,18 @@ class NumberSVM:
         """
         if type == 'in':
             try:
-                return 1 - self.svm.score(self.X, self.Y)
+                if ova:
+                    return 1 - self.svm.score(self.X, self.Y)
+                else:
+                    return 1 - self.svm.score(self.NVM_X, self.Y)
             except:
                 return -1
         elif type == 'out':
             try:
-                return 1 - self.svm.score(self.test_X, self.test_Y)
+                if ova:
+                    return 1 - self.svm.score(self.test_X, self.test_Y)
+                else:
+                    return 1 - self.svm.score(self.test_NVN_X, self.test_Y)
             except:
                 return -1
         return -1
@@ -274,16 +287,16 @@ def problem_5_and_6():
         q = 2
         while q <= 5:
             my_svm.set_poly_svm_params(q, c)
-            my_svm.svm_solver()
+            my_svm.svm_solver(ova=False)
             num_sv = np.sum(my_svm.svm.n_support_)
-            ein = my_svm.error()
-            eout = my_svm.error(type='out')
+            ein = my_svm.error(ova=False)
+            eout = my_svm.error(type='out', ova=False)
             print("C = {0}, Q ={1},  Number SV = {2}, Ein = {3}, Eout = {4}".format(c, q, num_sv, ein, eout))
             q += 3
         c *= 10
 
 
-def problems_7_and_8(trials):
+def problem_8(trials):
     """
     Methods to solve problems 7 and 8
     """
@@ -296,10 +309,8 @@ def problems_7_and_8(trials):
         my_svm.set_poly_svm_params(2, c)
         e_cv = 0
         for i in range(trials):
-            if i % 10 == 0:
-                print(i)
             e_cv += my_svm.poly_cross_validation(ova=False)
-            my_svm.shuffle_arrays()
+            my_svm.shuffle_arrays(ova=False)
 
         print("C = {0}, E_cv = {1}".format(c, (e_cv / trials)))
         c *= 10
@@ -317,11 +328,11 @@ def problems_9_and_10():
     c = 0.01
     while c <= 1e6:
         my_svm.set_rbf_svm(c)
-        my_svm.svm_solver()
+        my_svm.svm_solver(ova=False)
         num_sv = np.sum(my_svm.svm.n_support_)
-        ein = my_svm.error()
-        eout = my_svm.error(type='out')
+        ein = my_svm.error(ova=False)
+        eout = my_svm.error(type='out', ova=False)
         print("C = {0}, Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
         c *= 100
 
-problems_7_and_8(100)
+problem_8(1000)
