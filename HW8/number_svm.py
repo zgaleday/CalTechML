@@ -25,7 +25,7 @@ class NumberSVM:
         self.test_X = None
         self.test_numbers = None
         self.test_Y = None
-        self.index_array = np.empty(11)
+        self.index_array = np.empty(11, dtype=int)
         self.test_points = -1
 
     def read_data(self, filename, test=False):
@@ -54,7 +54,7 @@ class NumberSVM:
             self.numbers = np.array(numbers, dtype='d')
             self.N = len(self.numbers)
             for i, j in enumerate(range(0, np.int(self.N), np.int(self.N / 10))):
-                self.index_array[i] = j
+                self.index_array[i] = np.int(j)
         else:
             self.test_X = np.array(points, dtype='d')
             self.test_numbers = np.array(numbers, dtype='d')
@@ -140,14 +140,22 @@ class NumberSVM:
         except:
             return False
 
-    def poly_cross_validation(self, Q, C):
+    def poly_cross_validation(self):
         """
         Runs SVM with 10-fold cross validation
-        :param Q: Order of the polynomial kernel to be used
-        :param C: Margin violation constraint
         :return: Error of the cross validation
         """
-        e_cv = 0
+        e_cv = 0.0
+        self.svm.fit(self.X[self.index_array[1]:], self.Y[self.index_array[1]:])
+        e_cv += self.error()
+        for i in range(1, 10):
+            temp_X = np.append(self.X[0: self.index_array[i], 0:2], self.X[self.index_array[i+1]:, 0:2], axis=0)
+            temp_Y = np.append(self.Y[0: self.index_array[i]], self.Y[self.index_array[i+1]:])
+            self.svm.fit(temp_X, temp_Y)
+            e_cv += self.error()
+        self.svm.fit(self.X[:self.index_array[9]], self.Y[:self.index_array[9]])
+        e_cv += self.error()
+        return e_cv / 10
 
 
     def error(self, type='in'):
@@ -225,4 +233,14 @@ def problem_5_and_6():
         c *= 10
 
 
-problem_4()
+def problems_7_and_8():
+    """
+    Methods to solve problems 7 and 8
+    """
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.number_v_number(1, 5)
+    my_svm.set_poly_svm_params(2, .01)
+    print(my_svm.poly_cross_validation())
+
+problems_7_and_8()
