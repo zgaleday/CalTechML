@@ -20,12 +20,15 @@ class NumberSVM:
         self.X = None
         self.numbers = None
         self.Y = None
+        self.NVM_X = None
         self.N = -1
         self.svm = None
         self.test_X = None
+        self.test_NVN_X = None
         self.test_numbers = None
         self.test_Y = None
         self.index_array = np.empty(11, dtype=int)
+        self.NVM_index_array = np.empty(11, dtype=int)
         self.test_points = -1
 
     def read_data(self, filename, test=False):
@@ -91,20 +94,30 @@ class NumberSVM:
         :param test: see methods above
         :return: void
         """
+        NVN_X = []
+        Y = []
         if not test:
-            self.Y = np.zeros(self.N, dtype='d')
             for i, num in enumerate(self.numbers):
                 if num == a:
-                    self.Y[i] = 1
+                    Y.append(np.double(1))
+                    NVN_X.append(self.X[i])
                 elif num == b:
-                    self.Y[i] = -1
+                    Y.append(np.double(-1))
+                    NVN_X.append(self.X[i])
         else:
             self.test_Y = np.zeros(self.test_points, dtype='d')
             for i, num in enumerate(self.test_numbers):
                 if num == a:
-                    self.test_Y[i] = 1
+                    Y.append(np.double(1))
+                    NVN_X.append(self.X[i])
                 elif num == b:
-                    self.test_Y[i] = -1
+                    Y.append(np.double(-1))
+                    NVN_X.append(self.X[i])
+        self.NVM_X = np.array(NVN_X, dtype='d')
+        self.Y = np.array(Y, dtype='d')
+        n = len(self.NVM_X)
+        for i, j in enumerate(range(0, n, np.int(n / 10))):
+            self.NVM_index_array[i] = np.int(j)
 
     def shuffle_arrays(self):
         """
@@ -126,46 +139,73 @@ class NumberSVM:
         :param C: Margin violation constraint
         :return: void
         """
-        self.svm = svm.SVC(C=C, kernel='poly', degree=Q)
+        self.svm = svm.SVC(C=C, kernel='poly', degree=Q, gamma=1, coef0=1)
 
     def set_rbf_svm(self, C):
         """
         Method to set the instance of svm stored in class to rbf kernel
         :param C: Margin violation constraint
         """
-        self.svm = svm.SVC(C=C)
+        self.svm = svm.SVC(C=C, kernel='rbf', gamma=1)
 
-    def svm_solver(self):
+    def svm_solver(self, ova=True):
         """
         Solves current svm instance stored in the class this the self.X and self.Y params.
         If params not set method or svm fails returns false otherwise returns true
+        :param ova: If true runs ova solver else runs ovo solver.
         :return: boolean of success of training
         """
-        try:
-            self.svm.fit(self.X, self.Y)
-            return True
-        except:
-            return False
+        if ova:
+            try:
+                self.svm.fit(self.X, self.Y)
+                return True
+            except:
+                return False
+        else:
+            try:
+                self.svm.fit(self.NVM_X, self.Y)
+                return True
+            except:
+                return False
 
-    def poly_cross_validation(self):
+    def poly_cross_validation(self, ova=True):
         """
         Runs SVM with 10-fold cross validation
+        :param ova: runs ova fit if true ovo fit if false
         :return: Error of the cross validation
         """
         e_cv = 0.0
-        temp_X = self.X[self.index_array[1]:]
-        temp_Y = self.Y[self.index_array[1]:]
-        self.svm.fit(temp_X, temp_Y)
-        e_cv += 1 - self.svm.score(temp_X, temp_Y)
-        for i in range(1, 10):
-            temp_X = np.append(self.X[0: self.index_array[i], 0:2], self.X[self.index_array[i+1]:, 0:2], axis=0)
-            temp_Y = np.append(self.Y[0: self.index_array[i]], self.Y[self.index_array[i+1]:])
+        if ova:
+            temp_X = self.X[self.index_array[1]:]
+            temp_Y = self.Y[self.index_array[1]:]
             self.svm.fit(temp_X, temp_Y)
-            e_cv += 1 - self.svm.score(temp_X, temp_Y)  # Fix s.t. uses left out set for error....
-        temp_X = self.X[:self.index_array[9]]
-        temp_Y = self.Y[:self.index_array[9]]
-        self.svm.fit(temp_X, temp_Y)
-        e_cv += 1 - self.svm.score(temp_X, temp_Y)
+            e_cv += 1 - self.svm.score(self.X[:self.index_array[1]], self.Y[:self.index_array[1]])
+            for i in range(1, 10):
+                temp_X = np.append(self.X[0: self.index_array[i], 0:2], self.X[self.index_array[i+1]:, 0:2], axis=0)
+                temp_Y = np.append(self.Y[0: self.index_array[i]], self.Y[self.index_array[i+1]:])
+                self.svm.fit(temp_X, temp_Y)
+                e_cv += 1 - self.svm.score(self.X[self.index_array[i]:self.index_array[i + 1]],
+                                           self.Y[self.index_array[i]:self.index_array[i + 1]])
+            temp_X = self.X[:self.index_array[9]]
+            temp_Y = self.Y[:self.index_array[9]]
+            self.svm.fit(temp_X, temp_Y)
+            e_cv += 1 - self.svm.score(self.X[self.index_array[9]:], self.Y[self.index_array[9]:])
+        else:
+            temp_X = self.NVM_X[self.NVM_index_array[1]:]
+            temp_Y = self.Y[self.NVM_index_array[1]:]
+            self.svm.fit(temp_X, temp_Y)
+            e_cv += 1 - self.svm.score(self.NVM_X[:self.NVM_index_array[1]], self.Y[:self.NVM_index_array[1]])
+            for i in range(1, 10):
+                temp_X = np.append(self.NVM_X[0: self.NVM_index_array[i], 0:2],
+                                   self.NVM_X[self.NVM_index_array[i + 1]:, 0:2], axis=0)
+                temp_Y = np.append(self.Y[0: self.NVM_index_array[i]], self.Y[self.NVM_index_array[i + 1]:])
+                self.svm.fit(temp_X, temp_Y)
+                e_cv += 1 - self.svm.score(self.NVM_X[self.NVM_index_array[i]:self.NVM_index_array[i + 1]],
+                                           self.Y[self.NVM_index_array[i]:self.NVM_index_array[i + 1]])
+            temp_X = self.NVM_X[:self.NVM_index_array[9]]
+            temp_Y = self.Y[:self.NVM_index_array[9]]
+            self.svm.fit(temp_X, temp_Y)
+            e_cv += 1 - self.svm.score(self.NVM_X[self.NVM_index_array[9]:], self.Y[self.NVM_index_array[9]:])
         return e_cv / 10
 
 
@@ -243,7 +283,7 @@ def problem_5_and_6():
         c *= 10
 
 
-def problems_7_and_8():
+def problems_7_and_8(trials):
     """
     Methods to solve problems 7 and 8
     """
@@ -255,17 +295,17 @@ def problems_7_and_8():
     while c <= 1:
         my_svm.set_poly_svm_params(2, c)
         e_cv = 0
-        for i in range(100):
+        for i in range(trials):
             if i % 10 == 0:
                 print(i)
-            e_cv += my_svm.poly_cross_validation()
+            e_cv += my_svm.poly_cross_validation(ova=False)
             my_svm.shuffle_arrays()
 
-        print("C = {0}, E_cv = {1}".format(c, (e_cv / 100)))
+        print("C = {0}, E_cv = {1}".format(c, (e_cv / trials)))
         c *= 10
 
 
-def problem_9_and_10():
+def problems_9_and_10():
     """
     Method to test num v num svm classification on 1 v 5 with varying C values.  Prints the in sample error to console.
     """
@@ -284,4 +324,4 @@ def problem_9_and_10():
         print("C = {0}, Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
         c *= 100
 
-problems_7_and_8()
+problems_7_and_8(100)
