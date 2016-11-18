@@ -25,6 +25,7 @@ class NumberSVM:
         self.test_X = None
         self.test_numbers = None
         self.test_Y = None
+        self.index_array = np.empty(11)
         self.test_points = -1
 
     def read_data(self, filename, test=False):
@@ -52,6 +53,8 @@ class NumberSVM:
             self.X = np.array(points, dtype='d')
             self.numbers = np.array(numbers, dtype='d')
             self.N = len(self.numbers)
+            for i, j in enumerate(range(0, np.int(self.N), np.int(self.N / 10))):
+                self.index_array[i] = j
         else:
             self.test_X = np.array(points, dtype='d')
             self.test_numbers = np.array(numbers, dtype='d')
@@ -144,7 +147,8 @@ class NumberSVM:
         :param C: Margin violation constraint
         :return: Error of the cross validation
         """
-        # TODO
+        e_cv = 0
+
 
     def error(self, type='in'):
         """
@@ -190,6 +194,7 @@ def problem_4():
     my_svm.read_data("features.train")
     my_svm.set_poly_svm_params(2, 0.01)
     my_svm.number_v_all(0)
+    my_svm.poly_cross_validation(2, .01)
     my_svm.svm_solver()
     zero_support_vectors = np.sum(my_svm.svm.n_support_)
     my_svm.number_v_all(1)
@@ -220,3 +225,4 @@ def problem_5_and_6():
         c *= 10
 
 
+problem_4()
