@@ -139,7 +139,7 @@ class NumberSVM:
         """
         Solves current svm instance stored in the class this the self.X and self.Y params.
         If params not set method or svm fails returns false otherwise returns true
-        :return: boolean of sucess of training
+        :return: boolean of success of training
         """
         try:
             self.svm.fit(self.X, self.Y)
@@ -153,15 +153,19 @@ class NumberSVM:
         :return: Error of the cross validation
         """
         e_cv = 0.0
-        self.svm.fit(self.X[self.index_array[1]:], self.Y[self.index_array[1]:])
-        e_cv += self.error()
+        temp_X = self.X[self.index_array[1]:]
+        temp_Y = self.Y[self.index_array[1]:]
+        self.svm.fit(temp_X, temp_Y)
+        e_cv += 1 - self.svm.score(temp_X, temp_Y)
         for i in range(1, 10):
             temp_X = np.append(self.X[0: self.index_array[i], 0:2], self.X[self.index_array[i+1]:, 0:2], axis=0)
             temp_Y = np.append(self.Y[0: self.index_array[i]], self.Y[self.index_array[i+1]:])
             self.svm.fit(temp_X, temp_Y)
-            e_cv += self.error()
-        self.svm.fit(self.X[:self.index_array[9]], self.Y[:self.index_array[9]])
-        e_cv += self.error()
+            e_cv += 1 - self.svm.score(temp_X, temp_Y)
+        temp_X = self.X[:self.index_array[9]]
+        temp_Y = self.Y[:self.index_array[9]]
+        self.svm.fit(temp_X, temp_Y)
+        e_cv += 1 - self.svm.score(temp_X, temp_Y)
         return e_cv / 10
 
 
@@ -209,7 +213,6 @@ def problem_4():
     my_svm.read_data("features.train")
     my_svm.set_poly_svm_params(2, 0.01)
     my_svm.number_v_all(0)
-    my_svm.poly_cross_validation(2, .01)
     my_svm.svm_solver()
     zero_support_vectors = np.sum(my_svm.svm.n_support_)
     my_svm.number_v_all(1)
@@ -258,7 +261,27 @@ def problems_7_and_8():
             e_cv += my_svm.poly_cross_validation()
             my_svm.shuffle_arrays()
 
-        print("C = {0}, E_cv = {1}".format(c, e_cv / 100))
+        print("C = {0}, E_cv = {1}".format(c, (e_cv / 100)))
         c *= 10
+
+
+def problem_9_and_10():
+    """
+    Method to test num v num svm classification on 1 v 5 with varying C values.  Prints the in sample error to console.
+    """
+    my_svm = NumberSVM()
+    my_svm.read_data("features.train")
+    my_svm.read_data("features.test", test=True)
+    my_svm.number_v_number(1, 5)
+    my_svm.number_v_number(1, 5, test=True)
+    c = 0.01
+    while c <= 1e6:
+        my_svm.set_rbf_svm(c)
+        my_svm.svm_solver()
+        num_sv = np.sum(my_svm.svm.n_support_)
+        ein = my_svm.error()
+        eout = my_svm.error(type='out')
+        print("C = {0}, Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
+        c *= 100
 
 problems_7_and_8()
