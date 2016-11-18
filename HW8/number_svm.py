@@ -103,6 +103,19 @@ class NumberSVM:
                 elif num == b:
                     self.test_Y[i] = -1
 
+    def shuffle_arrays(self):
+        """
+        Shuffles the self.X., self.Y, and self.numbers arrays.  The shuffle will occur such that self.X[i], self.Y[i]
+        and self.numbers[i] corresponds to the same entry in the input set before the shuffle
+        :return: void
+        """
+        state = np.random.get_state()
+        np.random.shuffle(self.X)
+        np.random.set_state(state)
+        np.random.shuffle(self.Y)
+        np.random.set_state(state)
+        np.random.shuffle(self.numbers)
+
     def set_poly_svm_params(self, Q, C):
         """
         Method to set the instance of svm stored in class
