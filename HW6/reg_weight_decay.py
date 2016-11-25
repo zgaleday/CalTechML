@@ -115,10 +115,10 @@ def classify_point(point, g):
         return -1.0
 
 
-points, classifications = read_file("in.dta")
-points_out, classifications_out = read_file("out.dta")
-points = transform(points)
-points_out = transform(points_out)
-g = weight_decay_lr_classification(points, classifications, -1)
-print(classification_error(points, classifications, g))
-print(classification_error(points_out, classifications_out, g))
+# points, classifications = read_file("in.dta")
+# points_out, classifications_out = read_file("out.dta")
+# points = transform(points)
+# points_out = transform(points_out)
+# g = weight_decay_lr_classification(points, classifications, -1)
+# print(classification_error(points, classifications, g))
+# print(classification_error(points_out, classifications_out, g))

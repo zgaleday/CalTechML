@@ -283,5 +283,3 @@ def problem_9_and_10():
         eout = my_svm.error(type='out')
         print("C = {0}, Number SV = {1}, Ein = {2}, Eout = {3}".format(c, num_sv, ein, eout))
         c *= 100
-
-problems_7_and_8()
