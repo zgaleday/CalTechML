@@ -1,4 +1,5 @@
 import numpy as np
+from HW8.number_svm import NumberSVM
 
 def x_matrix():
     """
@@ -14,6 +15,20 @@ def x_matrix():
                   [-2, 0]], dtype='d')
     return x
 
+def y_matrix():
+    """
+    Returns y matrix corresponding to x_matrix
+    :return: y matrix
+    """
+    x = np.array([[-1],
+                  [-1],
+                  [-1],
+                  [1],
+                  [1],
+                  [1],
+                  [1]], dtype='d')
+    return x
+
 
 def transform(x):
     """
@@ -21,7 +36,7 @@ def transform(x):
     :param x: matrix x formatted as stated above.
     :return: z matrix
     """
-    z = np.array((len(x), 2), dtype='d')
+    z = x
     for i, point in enumerate(x):
         x1 = point[0]
         x2 = point[1]
@@ -30,3 +45,5 @@ def transform(x):
     return z
 
 
+z = transform(x_matrix())
+print(z * y_matrix())
