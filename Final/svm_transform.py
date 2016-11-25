@@ -57,4 +57,20 @@ def problem_12():
     svm_instance.svm_solver()
     return np.sum(svm_instance.svm.n_support_)
 
-print(problem_12())
+
+def coef_matrix():
+
+    z = y_matrix() * transform(x_matrix())
+    z = np.concatenate((z, y_matrix()), axis=1)
+    return z
+
+
+def test_system(coef_matrix, w1, w2, b):
+    h = np.array([[w1], [w2], [b]])
+    for coefs in coef_matrix:
+        sum = np.dot(coefs, h)
+        print(sum)
+
+
+
+test_system(coef_matrix(), 1, 0, -.5)
