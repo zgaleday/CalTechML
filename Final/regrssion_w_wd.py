@@ -27,4 +27,28 @@ def problems_7_through_9(transform=False):
             eout = LRC.classification_error(data.test_X, data.test_Y, g)
         print("Number: {0}, Ein: {1}, Eout: {2}".format(number, ein, eout))
 
-problems_7_through_9(transform=True)
+
+def problem_10():
+    """
+    Method to solve problem 10.  Runs 1 v 5 classifier with non-linear transform and compares the preformance of lambda
+    {.01, 1} by printing Ein and Eout to console
+    :return: Void
+    """
+    data = NumberSVM()
+    data.read_data("features.train")
+    data.read_data("features.test", test=True)
+    data.number_v_number(1, 5)
+    data.number_v_number(1, 5, test=True)
+    data.NVM_X = LRC.transform_standard(data.NVM_X)
+    data.test_NVN_X = LRC.transform_standard(data.test_NVN_X)
+    g_low = LRC.weight_decay_lr_classification(data.NVM_X, data.Y, -2)
+    g_high = LRC.weight_decay_lr_classification(data.NVM_X, data.Y, 0)
+    ein_low = LRC.classification_error(data.NVM_X, data.Y, g_low)
+    eout_low = LRC.classification_error(data.test_NVN_X, data.test_Y, g_low)
+    ein_high = LRC.classification_error(data.NVM_X, data.Y, g_high)
+    eout_high = LRC.classification_error(data.test_NVN_X, data.test_Y, g_high)
+    print("lamda = 0.01: Ein: {0}, Eout: {1} \nlambda = 1.00: Ein: {2}, Eout: {3}".format(ein_low, eout_low,
+                                                                                          ein_high, eout_high))
+
+
+problem_10()
