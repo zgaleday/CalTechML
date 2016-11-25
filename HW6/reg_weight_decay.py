@@ -52,6 +52,28 @@ def transform(points):
     return transformed
 
 
+def transform_standard(points):
+
+    """
+    Takes in an array of points formatted (x1, x2) and outputs an array of points resultant from non-linear transform
+    (x1, x2) => (1, x1, x2, x1x2, x1^2, x2^2)
+    :param points: array of points (x1, x2)
+    :return: array of points (1, x1, x2, x1x2, x1^2, x2^2)
+    """
+    transformed = np.empty([len(points), 6])
+    for index, point in enumerate(points):
+        x1 = point[0]
+        x2 = point[1]
+        transformed[index][0] = 1.0
+        transformed[index][1] = x1
+        transformed[index][2] = x2
+        transformed[index][4] = x1 ** 2
+        transformed[index][5] = x2 ** 2
+        transformed[index][3] = x1 * x2
+
+    return transformed
+
+
 def regression_for_classification(points, classifications):
 
     """
