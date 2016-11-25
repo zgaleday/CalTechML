@@ -45,5 +45,16 @@ def transform(x):
     return z
 
 
-z = transform(x_matrix())
-print(z * y_matrix())
+def problem_12():
+    """
+    Method to solve SVM w/ poly kernel method with Q = 2
+    :return: number of SVs
+    """
+    svm_instance = NumberSVM()
+    svm_instance.X = x_matrix()
+    svm_instance.Y = y_matrix().ravel()
+    svm_instance.set_poly_svm_params(2, np.inf)
+    svm_instance.svm_solver()
+    return np.sum(svm_instance.svm.n_support_)
+
+print(problem_12())
