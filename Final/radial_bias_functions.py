@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial import distance
+import HW6.reg_weight_decay as lr
 
 """
 Class to compare the radial bias function with SVM using the RBF Kernel for the target function x2 - x1 + 0.25sin(pi *x)
@@ -94,13 +95,14 @@ class RadialBiasFunction:
             for j, center in enumerate(self.centers):
                 self.phi[i][j] = np.exp(-gamma * distance.euclidean(point, center) ** 2)
 
-
     def LRC(self):
 
         """
         Does linear regression for classification with phi matrix.  Stores value in self.g_LRC
         :return: void
         """
+        pseudo_inverse = np.linalg.pinv(self.phi)
+        self.g_LRC = np.dot(pseudo_inverse, self.Y)
 
     def RBF_SVM(self, gamma):
 
@@ -122,3 +124,5 @@ rbf = RadialBiasFunction()
 rbf.generate_y()
 rbf.cluster(7)
 rbf.generate_phi(1.5)
+rbf.LRC()
+print(rbf.g_LRC)
