@@ -18,6 +18,8 @@ class RadialBiasFunction:
         self.cluster_sizes = None
         self.g = None
         self.gamma = None
+        self.test_X = None
+        self.test_Y = None
 
     def classify(self, point):
 
@@ -34,14 +36,19 @@ class RadialBiasFunction:
         else:
             return -1.0
 
-    def generate_y(self):
+    def generate_y(self, test=False):
 
         """
         Generates the Y vector from points X.
+        :param test: If true classifies for test set. else classifies for in sample
         :return: void
         """
-        for i, point in enumerate(self.X):
-            self.Y[i] = self.classify(point)
+        if not test:
+            for i, point in enumerate(self.X):
+                self.Y[i] = self.classify(point)
+        else:
+            for i, point in enumerate(self.test_X):
+                self.test_Y[i] = self.classify(point)
 
     def cluster(self, k):
 
@@ -127,6 +134,22 @@ class RadialBiasFunction:
         :param in_sample: if true gives in sample. else give out of sample
         :return: error of classification
         """
+        if in_sample:
+            error = 0.0
+            for i, point in enumerate(self.X):
+                if self.Y[i] != self.rbf_classify(point):
+                    error += 1
+            return error / 100
+        else:
+            self.test_X = np.random.uniform(-1, 1, (10000, 2))
+            self.generate_y(test=True)
+            error = 0.0
+            for i, point in enumerate(self.test_X):
+                if self.test_Y[i] != self.rbf_classify(point):
+                    error += 1
+            return error / 10000
+
+
 
 
 
