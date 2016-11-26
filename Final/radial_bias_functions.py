@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial import distance
 
 """
 Class to compare the radial bias function with SVM using the RBF Kernel for the target function x2 - x1 + 0.25sin(pi *x)
@@ -9,7 +10,7 @@ class RadialBiasFunction:
     def __init__(self):
 
         self.X = np.random.uniform(-1, 1, (100, 2))
-        self.Y = np.array((100))
+        self.Y = np.empty(100)
         self.phi = None
         self.K = 0
         self.centers = None
@@ -42,15 +43,20 @@ class RadialBiasFunction:
             self.Y[i] = self.classify(point)
 
 
-    def cluster(self, K):
+    def cluster(self, k):
 
         """
         Preforms K means clustering on the self.X points.  Starts from a random point and runs until convergence.
         If any cluster is empty the algorithm repeats with new starting points.
         Sets self.centers equal to the clusters x1, x2 coords
-        :param K: number of clusters
+        :param k: number of clusters
         :return: void
         """
+        self.K = k
+        self.centers = np.random.choice(self.X, replace=False)
+        self.cluster_sizes = np.zeros(self.K)
+        print(self.centers)
+
 
     def generate_phi(self, gamma):
 
@@ -92,3 +98,9 @@ class RadialBiasFunction:
         :param in_sample: if true gives in sample. else give out of sample
         :return: error of classification
         """
+
+
+rbf = RadialBiasFunction()
+rbf.generate_y()
+rbf.cluster(7)
+print(rbf.centers)
