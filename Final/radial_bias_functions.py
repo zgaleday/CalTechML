@@ -12,14 +12,16 @@ class RadialBiasFunction:
 
         self.X = np.random.uniform(-1, 1, (100, 2))
         self.Y = np.empty(100)
+        self.generate_y()
         self.phi = None
         self.K = 0
         self.centers = None
         self.cluster_sizes = None
         self.g = None
         self.gamma = None
-        self.test_X = None
-        self.test_Y = None
+        self.test_X = np.random.uniform(-1, 1, (10000, 2))
+        self.test_Y = np.empty(10000)
+        self.generate_y(test=True)
 
     def classify(self, point):
 
@@ -129,6 +131,7 @@ class RadialBiasFunction:
 
 
     def error(self, in_sample=True):
+
         """
         Returns the error of the given hypothesis.
         :param in_sample: if true gives in sample. else give out of sample
@@ -141,14 +144,26 @@ class RadialBiasFunction:
                     error += 1
             return error / 100
         else:
-            self.test_X = np.random.uniform(-1, 1, (10000, 2))
-            self.generate_y(test=True)
             error = 0.0
             for i, point in enumerate(self.test_X):
                 if self.test_Y[i] != self.rbf_classify(point):
                     error += 1
             return error / 10000
 
+    def resample(self):
+
+        """
+        Generates a new in sample set to train on.  Clears all parameters.
+        :return: void
+        """
+        self.X = np.random.uniform(-1, 1, (100, 2))
+        self.generate_y()
+        self.phi = None
+        self.K = 0
+        self.centers = None
+        self.cluster_sizes = None
+        self.g = None
+        self.gamma = None
 
 
 
