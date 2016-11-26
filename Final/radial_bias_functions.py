@@ -18,6 +18,7 @@ class RadialBiasFunction:
         self.centers = None
         self.cluster_sizes = None
         self.g = None
+        self.b = None
         self.gamma = None
         self.test_X = np.random.uniform(-1, 1, (10000, 2))
         self.test_Y = np.empty(10000)
@@ -52,7 +53,7 @@ class RadialBiasFunction:
             for i, point in enumerate(self.test_X):
                 self.test_Y[i] = self.classify(point)
 
-    def cluster(self, k):
+    def cluster(self):
 
         """
         Preforms K means clustering on the self.X points.  Starts from a random point and runs until convergence.
@@ -61,7 +62,6 @@ class RadialBiasFunction:
         :param k: number of clusters
         :return: void
         """
-        self.K = k
         center_index = np.random.choice(range(100), self.K, replace=False)
         self.centers = np.array([self.X[i] for i in center_index])
         self.cluster_sizes = np.zeros(self.K)
@@ -83,7 +83,7 @@ class RadialBiasFunction:
                             member_of[i] = j
                             min_dist[i] = dist
             if np.count_nonzero(self.cluster_sizes) != self.K:
-                return self.cluster(k)
+                return self.cluster()
             self.centers = np.zeros((self.K, 2), dtype='d')
             for i, point in enumerate(self.X):
                 center = member_of[i]
@@ -91,19 +91,18 @@ class RadialBiasFunction:
             for i, center in enumerate(self.centers):
                 center /= self.cluster_sizes[i]
 
-    def generate_phi(self, gamma):
+    def generate_phi(self):
 
         """
         Generates the phi matrix for RBF solving using linear regression for classification.  Stores the value of phi
         in self.phi (100 x K) matrix.  Clustering done in method to ensure dependency met.
-        :param gamma: the value of gamma in the RBF model
         :return: void
         """
-        self.gamma = gamma
         self.phi = np.empty((100, self.K))
         for i, point in enumerate(self.X):
             for j, center in enumerate(self.centers):
-                self.phi[i][j] = np.exp(-gamma * distance.euclidean(point, center) ** 2)
+                self.phi[i][j] = np.exp(-self.gamma * distance.euclidean(point, center) ** 2)
+        self.phi = np.concatenate((self.phi, np.ones((100, 1))), axis=1)
 
     def LRC(self):
 
@@ -113,6 +112,21 @@ class RadialBiasFunction:
         """
         pseudo_inverse = np.linalg.pinv(self.phi)
         self.g = np.dot(pseudo_inverse, self.Y)
+        self.b = self.g[-1]
+        self.g = self.g[:-1]
+
+    def fit(self, gamma, K):
+        """
+        Solves the vanilla rbf with current in_sample and given params
+        :param gamma: gamma value
+        :param K: number of clusters
+        :return: void
+        """
+        self.K = K
+        self.gamma = gamma
+        self.cluster()
+        self.generate_phi()
+        self.LRC()
 
     def rbf_classify(self, point):
 
@@ -121,7 +135,7 @@ class RadialBiasFunction:
         :param point: point to be classified
         :return: +1 if classifier positive -1 otherwise
         """
-        sum = 0.0
+        sum = self.b
         for i, center in enumerate(self.centers):
             sum += self.g[i] * np.exp(-self.gamma * distance.euclidean(center, point) ** 2)
         if sum > 0:
@@ -166,11 +180,43 @@ class RadialBiasFunction:
         self.gamma = None
 
 
+def question_13(gamma):
+    """
+    Function to determine the number of runs on hard margin svm result in non-zero ein.
+    :param gamma: gamma value in rbf kernel
+    :return: fraction of times hard-margin w/ svm kernel fails
+    """
+    rbf = RadialBiasFunction()
+    fails = 0.0
+    my_svm = svm.SVC(C=np.inf, kernel='rbf', gamma=gamma)
+    for i in range(1000):
+        my_svm = my_svm.fit(rbf.X, rbf.Y)
+        if my_svm.score(rbf.X, rbf.Y) != 1:
+            fails += 1
+        rbf.resample()
+    return fails / 1000
 
 
-rbf = RadialBiasFunction()
-rbf.generate_y()
-rbf.cluster(7)
-rbf.generate_phi(1.5)
-rbf.LRC()
-print(rbf.g)
+def question_14_and_15(gamma, K):
+    """
+    Function to determine how often SVM with RBF beats vanilla RBF
+    :param gamma: gamma value in rbf kernel
+    :param K: number of cluster in regular rbf
+    :return: fraction of times hard-margin w/ svm kernel fails
+    """
+    rbf = RadialBiasFunction()
+    wins = 0.0
+    my_svm = svm.SVC(C=np.inf, kernel='rbf', gamma=gamma)
+    for i in range(100):
+        rbf.fit(gamma, K)
+        my_svm = my_svm.fit(rbf.X, rbf.Y)
+        svm_error = 1 - my_svm.score(rbf.test_X, rbf.test_Y)
+        rbf_error = rbf.error(in_sample=False)
+        if svm_error < rbf_error:
+            wins += 1
+        rbf.resample()
+    return wins / 1000
+
+print(question_14_and_15(1.5, 9))
+
+
