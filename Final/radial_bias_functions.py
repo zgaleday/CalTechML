@@ -38,6 +38,8 @@ class RadialBiasFunction:
         Generates the Y vector from points X.
         :return: void
         """
+        for i, point in enumerate(self.X):
+            self.Y[i] = self.classify(point)
 
 
     def cluster(self, K):
