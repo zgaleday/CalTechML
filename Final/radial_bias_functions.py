@@ -80,7 +80,6 @@ class RadialBiasFunction:
                 self.centers[center] += point
             for i, center in enumerate(self.centers):
                 center /= self.cluster_sizes[i]
-            print(self.centers)
 
     def generate_phi(self, gamma):
 
@@ -90,6 +89,10 @@ class RadialBiasFunction:
         :param gamma: the value of gamma in the RBF model
         :return: void
         """
+        self.phi = np.empty((100, self.K))
+        for i, point in enumerate(self.X):
+            for j, center in enumerate(self.centers):
+                self.phi[i][j] = np.exp(-gamma * distance.euclidean(point, center) ** 2)
 
     def RBF(self, point, gamma, center):
 
@@ -127,3 +130,4 @@ class RadialBiasFunction:
 rbf = RadialBiasFunction()
 rbf.generate_y()
 rbf.cluster(7)
+rbf.generate_phi(1.5)
