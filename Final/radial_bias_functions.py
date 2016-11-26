@@ -94,15 +94,6 @@ class RadialBiasFunction:
             for j, center in enumerate(self.centers):
                 self.phi[i][j] = np.exp(-gamma * distance.euclidean(point, center) ** 2)
 
-    def RBF(self, point, gamma, center):
-
-        """
-        Calculates the RBF for the given point an gamma value with the center at index center in self.center
-        :param point: {x1, x2}
-        :param gamma: gamma value in RBF
-        :param center: index into the self.center array
-        :return: value of the RBF for given input.
-        """
 
     def LRC(self):
 
