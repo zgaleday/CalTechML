@@ -218,6 +218,21 @@ def question_14_and_15(gamma, K):
     return wins / 100
 
 
+def question_16():
+    """
+    Function to compare the performance of regular rbf with 9 clusters and 12 clusters in terms of Eout.
+    Print to console for 10 runs
+    :return: void
+    """
+    rbf = RadialBiasFunction()
+    for i in range(10):
+        rbf.fit(1.5, 9)
+        error_in_9 = rbf.error()
+        error_out_9 = rbf.error(in_sample=False)
+        rbf.fit(1.5, 12)
+        error_in_12 = rbf.error()
+        error_out_12 = rbf.error(in_sample=False)
+        print("Error (in/out) for 9 clusters: {0} / {1}\nError (in/out) for 12 clusters: {2} / {3}\n"
+              .format(error_in_9, error_out_9,error_in_12, error_out_12))
 
-
-
+question_16()
