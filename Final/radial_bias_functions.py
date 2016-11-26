@@ -215,8 +215,9 @@ def question_14_and_15(gamma, K):
         if svm_error < rbf_error:
             wins += 1
         rbf.resample()
-    return wins / 1000
+    return wins / 100
 
-print(question_14_and_15(1.5, 9))
+
+
 
 
