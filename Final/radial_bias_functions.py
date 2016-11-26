@@ -42,7 +42,6 @@ class RadialBiasFunction:
         for i, point in enumerate(self.X):
             self.Y[i] = self.classify(point)
 
-
     def cluster(self, k):
 
         """
@@ -82,7 +81,6 @@ class RadialBiasFunction:
             for i, center in enumerate(self.centers):
                 center /= self.cluster_sizes[i]
             print(self.centers)
-
 
     def generate_phi(self, gamma):
 
