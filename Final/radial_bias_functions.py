@@ -234,5 +234,39 @@ def question_16():
         error_out_12 = rbf.error(in_sample=False)
         print("Error (in/out) for 9 clusters: {0} / {1}\nError (in/out) for 12 clusters: {2} / {3}\n"
               .format(error_in_9, error_out_9,error_in_12, error_out_12))
+        rbf.resample()
 
-question_16()
+
+def question_17():
+    """
+    Function to compare the performance of regular rbf with 9 clusters and either gamma = 1.5 or 2.
+    Print to console for 10 runs
+    :return: void
+    """
+    rbf = RadialBiasFunction()
+    for i in range(20):
+        rbf.fit(1.5, 9)
+        error_in_lo = rbf.error()
+        error_out_lo = rbf.error(in_sample=False)
+        rbf.fit(2.0, 9)
+        error_in_hi = rbf.error()
+        error_out_hi = rbf.error(in_sample=False)
+        print("Error (in/out) for gamma = 1.5: {0} / {1}\nError (in/out) for gamma = 2.0: {2} / {3}\n"
+              .format(error_in_lo, error_out_lo, error_in_hi, error_out_hi))
+        rbf.resample()
+
+
+def question_18():
+    """
+    Function to determine the fraction of runs in which an rbf w/ k=9 and gamma=1.5 achieves Ein = 0
+    :return: fraction of runs with ein = 0
+    """
+    rbf = RadialBiasFunction()
+    wins = 0.0
+    for i in range(100):
+        rbf.fit(1.5, 9)
+        rbf_error = rbf.error()
+        if rbf_error == 0:
+            wins += 1
+        rbf.resample()
+    return wins / 100
