@@ -24,6 +24,13 @@ class RadialBiasFunction:
         :param point: point formatted {x1, x2}
         :return: +1 if x2 - x1 + 0.25sin(pi * x) pos. -1 otherwise
         """
+        x1 = point[0]
+        x2 = point[1]
+        f_x = x2 - x1 + 0.25 * np.sin(np.pi * x1)
+        if f_x > 0:
+            return 1.0
+        else:
+            return -1.0
 
     def generate_y(self):
 
