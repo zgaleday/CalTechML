@@ -53,9 +53,32 @@ class RadialBiasFunction:
         :return: void
         """
         self.K = k
-        self.centers = np.random.choice(self.X, replace=False)
+        center_index = np.random.choice(range(100), self.K, replace=False)
+        self.centers = np.array([self.X[i] for i in center_index])
         self.cluster_sizes = np.zeros(self.K)
-        print(self.centers)
+        member_of = np.zeros(100)
+        min_dist = np.array([distance.euclidean(self.centers[0], point) for point in self.X])
+        self.cluster_sizes[0] = 100
+        flag = True
+        while flag:
+            flag = False
+            for i, point in enumerate(self.X):
+                for j, center in enumerate(self.centers):
+                    if member_of[i] != j:
+                        dist = distance.euclidean(point, center)
+                        if dist < min_dist:
+                            flag = True
+                            current = member_of[i]
+                            self.cluster_sizes[current] -= 1
+                            self.cluster_sizes[j] += 1
+                            member_of[i] = j
+                            min_dist[i] = dist
+            if np.count_nonzero(self.cluster_sizes) != self.K:
+                return self.cluster(k)
+
+
+
+
 
 
     def generate_phi(self, gamma):
@@ -103,4 +126,3 @@ class RadialBiasFunction:
 rbf = RadialBiasFunction()
 rbf.generate_y()
 rbf.cluster(7)
-print(rbf.centers)
