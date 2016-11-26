@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial import distance
-import HW6.reg_weight_decay as lr
+from sklearn import svm
 
 """
 Class to compare the radial bias function with SVM using the RBF Kernel for the target function x2 - x1 + 0.25sin(pi *x)
@@ -16,8 +16,8 @@ class RadialBiasFunction:
         self.K = 0
         self.centers = None
         self.cluster_sizes = None
-        self.g_LRC = None
-        self.RBF_svm = None
+        self.g = None
+        self.gamma = None
 
     def classify(self, point):
 
@@ -90,6 +90,7 @@ class RadialBiasFunction:
         :param gamma: the value of gamma in the RBF model
         :return: void
         """
+        self.gamma = gamma
         self.phi = np.empty((100, self.K))
         for i, point in enumerate(self.X):
             for j, center in enumerate(self.centers):
@@ -102,15 +103,23 @@ class RadialBiasFunction:
         :return: void
         """
         pseudo_inverse = np.linalg.pinv(self.phi)
-        self.g_LRC = np.dot(pseudo_inverse, self.Y)
+        self.g = np.dot(pseudo_inverse, self.Y)
 
-    def RBF_SVM(self, gamma):
+    def rbf_classify(self, point):
 
         """
-        Does Hard-margin SVM with RBF kernel and stores the svm instance in self.RBF_svm
-        :param gamma: the gamma value in the RBF kernel
-        :return: void
+        Classifies the given point using the calculated rbf classifier
+        :param point: point to be classified
+        :return: +1 if classifier positive -1 otherwise
         """
+        sum = 0.0
+        for i, center in enumerate(self.centers):
+            sum += self.g[i] * np.exp(-self.gamma * distance.euclidean(center, point) ** 2)
+        if sum > 0:
+            return 1.0
+        else:
+            return -1.0
+
 
     def error(self, in_sample=True):
         """
@@ -120,9 +129,10 @@ class RadialBiasFunction:
         """
 
 
+
 rbf = RadialBiasFunction()
 rbf.generate_y()
 rbf.cluster(7)
 rbf.generate_phi(1.5)
 rbf.LRC()
-print(rbf.g_LRC)
+print(rbf.g)
