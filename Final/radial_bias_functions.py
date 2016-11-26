@@ -56,7 +56,7 @@ class RadialBiasFunction:
         center_index = np.random.choice(range(100), self.K, replace=False)
         self.centers = np.array([self.X[i] for i in center_index])
         self.cluster_sizes = np.zeros(self.K)
-        member_of = np.zeros(100)
+        member_of = np.zeros(100, dtype=int)
         min_dist = np.array([distance.euclidean(self.centers[0], point) for point in self.X])
         self.cluster_sizes[0] = 100
         flag = True
@@ -66,7 +66,7 @@ class RadialBiasFunction:
                 for j, center in enumerate(self.centers):
                     if member_of[i] != j:
                         dist = distance.euclidean(point, center)
-                        if dist < min_dist:
+                        if dist < min_dist[i]:
                             flag = True
                             current = member_of[i]
                             self.cluster_sizes[current] -= 1
@@ -75,10 +75,13 @@ class RadialBiasFunction:
                             min_dist[i] = dist
             if np.count_nonzero(self.cluster_sizes) != self.K:
                 return self.cluster(k)
-
-
-
-
+            self.centers = np.zeros((self.K, 2), dtype='d')
+            for i, point in enumerate(self.X):
+                center = member_of[i]
+                self.centers[center] += point
+            for i, center in enumerate(self.centers):
+                center /= self.cluster_sizes[i]
+            print(self.centers)
 
 
     def generate_phi(self, gamma):
